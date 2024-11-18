@@ -1,0 +1,98 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Tiêu đề -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/titleInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tiêu đề" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Địa chỉ -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/addressInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Địa chỉ" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Giá thuê -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/priceInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Giá thuê"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Diện tích -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/areaInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Diện tích (m²)"
+                android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Mô tả -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/descriptionInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:hint="Mô tả chi tiết"
+                android:inputType="textMultiLine"
+                android:lines="5" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Nút thêm hình ảnh -->
+        <Button
+            android:id="@+id/addImagesButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thêm hình ảnh" />
+
+        <!-- RecyclerView để hiển thị các hình ảnh -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/imagesRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
+
+        <!-- Nút đăng tin -->
+        <Button
+            android:id="@+id/postButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Đăng tin" />
+
+    </LinearLayout>
+</ScrollView>

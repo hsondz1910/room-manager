@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Final Exam</string>
+    <string name="profile_picture">Profile picture</string>
+    <string name="username">Username</string>
+    <string name="email">user@email.com</string>
+    <string name="edit_profile">Chỉnh sửa hồ sơ</string>
+    <string name="my_favorites">Mục yêu thích của tôi</string>
+    <string name="no_favorites">Chưa có mục yêu thích nào</string>
+    <string name="favorite_item_image">Favorite item image</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="favorites">Mục yêu thích</string>
+    <string name="profile">Hồ sơ</string>
+    <string name="login_title">Đăng Nhập</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Mật khẩu</string>
+    <string name="remember_me_text">Nhớ mật khẩu</string>
+    <string name="forgot_password_text">Quên mật khẩu?</string>
+    <string name="login_button_text">Đăng nhập</string>
+    <string name="settings">Cài đặt</string>
+    <string name="room_management">Quản lý phòng trọ</string>
+    <string name="create_post">Đăng bài</string>
+</resources>

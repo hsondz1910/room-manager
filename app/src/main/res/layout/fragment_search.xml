@@ -1,0 +1,52 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            app:iconifiedByDefault="false"
+            app:queryHint="Tìm kiếm phòng trọ..." />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/filterChipGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Giá" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipArea"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Diện tích" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Khu vực" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

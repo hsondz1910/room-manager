@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "218726868076",
+    "project_id": "room-manager-85210",
+    "storage_bucket": "room-manager-85210.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218726868076:android:ef672e64201bdbf6eaa449",
+        "android_client_info": {
+          "package_name": "com.lastterm.finalexam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4ON3fL2bm5VNZ67q7dXf_-c2Ba0OoRMk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
