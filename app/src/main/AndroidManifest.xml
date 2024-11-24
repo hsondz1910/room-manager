@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
 
     <meta-data
@@ -33,9 +34,8 @@
         android:theme="@style/Theme.FinalExam"
         tools:targetApi="31">
 
-        <!-- Set LoginActivity as the launcher activity -->
         <activity
-            android:name=".account.LoginActivity"
+            android:name=".ui.account.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,9 +43,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".account.ForgotPasswordActivity"></activity>
+        <activity android:name=".ui.account.ForgotPasswordActivity"></activity>
         <activity android:name=".MainActivity"></activity>
-        <activity android:name=".account.RegisterActivity"></activity>
+        <activity android:name=".ui.account.RegisterActivity"></activity>
     </application>
-
 </manifest>

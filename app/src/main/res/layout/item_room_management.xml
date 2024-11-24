@@ -6,7 +6,7 @@
     android:padding="8dp">
 
     <ImageView
-        android:id="@+id/roomImage"
+        android:id="@+id/roomImageManagement"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@drawable/placeholder_img" />

@@ -8,9 +8,10 @@ pluginManagement {
             }
         }
         mavenCentral()
-        gradlePluginPortal()
+        gradlePluginPortal()  // This is needed if you're using plugins from Gradle Plugin Portal
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {

@@ -9,33 +9,38 @@
         android:id="@+id/edtFullName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Full Name" />
+        android:hint="Full Name"
+        android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/edtUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username" />
+        android:hint="Username"
+        android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/edtEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/edtPhone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Phone Number"
-        android:inputType="phone" />
+        android:inputType="phone"
+        android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/edtRole"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Role" />
+        android:hint="Role"
+        android:minHeight="48dp" />
 
     <Button
         android:id="@+id/btnSave"

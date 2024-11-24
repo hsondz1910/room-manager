@@ -8,24 +8,25 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.lastterm.finalexam.bottomMenu.AdminHomeFragment;
-import com.lastterm.finalexam.bottomMenu.OwnerHomeFragment;
-import com.lastterm.finalexam.bottomMenu.TenantHomeFragment;
-import com.lastterm.finalexam.bottomMenu.fragmentItem.FavoritesFragment;
-import com.lastterm.finalexam.bottomMenu.fragmentItem.SettingFragment;
-import com.lastterm.finalexam.room.RoomManagementFragment;
-import com.lastterm.finalexam.bottomMenu.fragmentItem.SearchFragment;
+import com.lastterm.finalexam.ui.fragments.home.AdminHomeFragment;
+import com.lastterm.finalexam.ui.fragments.home.OwnerHomeFragment;
+import com.lastterm.finalexam.ui.fragments.home.TenantHomeFragment;
+import com.lastterm.finalexam.ui.fragments.favorites.FavoritesFragment;
+import com.lastterm.finalexam.ui.fragments.SettingFragment;
+import com.lastterm.finalexam.ui.room.RoomManagementFragment;
+import com.lastterm.finalexam.ui.fragments.search.SearchFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private String userRole;  // Variable to store user role
+    private String userRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkUserRoleAndSetupNavigation() {
-        // Get the current user
         String userId = mAuth.getCurrentUser().getUid();
 
         // Fetch user role from Firestore
@@ -153,5 +153,12 @@ public class MainActivity extends AppCompatActivity {
             return new AdminHomeFragment();
         }
         return null;
+    }
+
+    public void replaceFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);  // R.id.fragment_container là ID của container chứa fragment
+        transaction.addToBackStack(null);  // Nếu muốn cho phép quay lại fragment trước đó
+        transaction.commit();
     }
 }
