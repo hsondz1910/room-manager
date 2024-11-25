@@ -1,7 +1,10 @@
 package com.lastterm.finalexam.data.repositories;
 
+import android.util.Log;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -11,6 +14,7 @@ import com.lastterm.finalexam.data.entities.Room;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class RoomRepository {
@@ -35,6 +39,7 @@ public class RoomRepository {
                         List<Room> rooms = new ArrayList<>();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Room room = document.toObject(Room.class);
+                            room.setId(document.getId());
                             rooms.add(room);
                         }
                         callback.accept(rooms);
@@ -58,19 +63,49 @@ public class RoomRepository {
         query.get().addOnSuccessListener(querySnapshot -> {
             List<Room> rooms = new ArrayList<>();
             for (QueryDocumentSnapshot document : querySnapshot) {
-                rooms.add(document.toObject(Room.class));
+                Room room = document.toObject(Room.class);
+
+                room.setId(document.getId());
+                Log.d("Room: ", document.getId());
+                rooms.add(room);
             }
             onSuccess.onSuccess(rooms);
         });
     }
 
-    public void addToFavorites(String roomId, String userId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        // Lưu phòng vào danh sách yêu thích của người dùng
+    public void addToFavorites(String roomId, String userId, OnSuccessListener<Boolean> onSuccess, OnFailureListener onFailure) {
         db.collection("users").document(userId)
                 .collection("favorites")
                 .document(roomId)
-                .set(new HashMap<>())  // Lưu một document trống với roomId là ID
-                .addOnSuccessListener(onSuccess)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        onSuccess.onSuccess(false);
+                    } else {
+                        // Lưu phòng vào danh sách yêu thích của người dùng
+                        db.collection("users").document(userId)
+                                .collection("favorites")
+                                .document(roomId)
+                                .set(new HashMap<>());  // Lưu một document trống với roomId là ID
+                        onSuccess.onSuccess(true);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore Error", "Error fetching document", e);
+                });
+
+
+
+    }
+    public void isFavorite(String userId, String roomId, OnSuccessListener<Boolean> onSuccess, OnFailureListener onFailure) {
+        db.collection("users").document(userId)
+                .collection("favorites")
+                .document(roomId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    boolean exists = documentSnapshot.exists(); // True if the document exists
+                    onSuccess.onSuccess(exists);
+                })
                 .addOnFailureListener(onFailure);
     }
 
@@ -79,10 +114,29 @@ public class RoomRepository {
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<Room> favoriteRooms = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : querySnapshot) {
-                        favoriteRooms.add(document.toObject(Room.class));
+
+                    if(querySnapshot.size() == 0) {
+                        onSuccess.onSuccess(favoriteRooms);
+                        return;
                     }
-                    onSuccess.onSuccess(favoriteRooms);
+
+                    AtomicInteger roomsLoaded = new AtomicInteger(0);
+                    for (QueryDocumentSnapshot document : querySnapshot) {
+                        String roomId = document.getId();
+                        getRoomById(roomId, room -> {
+                            if(room.getId() == null) {
+                            }
+                            if (room != null) {
+                                favoriteRooms.add(room);
+                            }
+
+                            // Kiểm tra xem đã tải xong tất cả phòng chưa
+                            if (roomsLoaded.incrementAndGet() == querySnapshot.size()) {
+                                onSuccess.onSuccess(favoriteRooms);
+                            }
+                        });
+                    }
+
                 });
     }
 
@@ -93,6 +147,14 @@ public class RoomRepository {
                 .delete()
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
+    }
+
+    public void getRoomById(String roomId, OnSuccessListener<Room> onSuccess) {
+        db.collection("rooms").document(roomId).get().addOnSuccessListener(documentSnapshot -> {
+            Room room = documentSnapshot.toObject(Room.class);
+            room.setId(roomId);
+            onSuccess.onSuccess(room);
+        });
     }
 
 }

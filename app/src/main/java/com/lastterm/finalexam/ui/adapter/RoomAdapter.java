@@ -1,6 +1,7 @@
 package com.lastterm.finalexam.ui.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +13,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.Room;
+import com.lastterm.finalexam.data.repositories.RoomRepository;
 
 import java.util.List;
 
@@ -64,6 +67,22 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
             popupMenu.show();
         });
+
+        holder.heartIcon.setOnClickListener(view -> {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            RoomRepository roomRepository = new RoomRepository();
+            Log.d("Room: ", room.getId());
+            boolean isFavorite = false;
+
+            roomRepository.addToFavorites(room.getId(),auth.getCurrentUser().getUid(), (s) -> {
+                if (s) {
+                    Toast.makeText(context, "Đã thêm vào mục yêu thích", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Đã có trong mục yêu thích", Toast.LENGTH_SHORT).show();
+                }
+            }, (e) -> {Log.d("fail: ", e.getMessage());});
+
+        });
     }
 
     @Override
@@ -74,7 +93,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     public static class RoomViewHolder extends RecyclerView.ViewHolder {
 
         TextView roomTitle, roomPrice, roomAddress;
-        ImageView menuIcon;
+        ImageView menuIcon, heartIcon;
 
         public RoomViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -82,6 +101,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             roomPrice = itemView.findViewById(R.id.roomPrice);
             roomAddress = itemView.findViewById(R.id.roomAddress);
             menuIcon = itemView.findViewById(R.id.menuIcon);
+            heartIcon = itemView.findViewById(R.id.heartIcon);
         }
     }
+
 }
