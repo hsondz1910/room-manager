@@ -11,12 +11,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
+import com.lastterm.finalexam.ui.room.RoomDetailActivity;
 
 import java.util.List;
 
@@ -71,8 +74,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         holder.heartIcon.setOnClickListener(view -> {
             FirebaseAuth auth = FirebaseAuth.getInstance();
             RoomRepository roomRepository = new RoomRepository();
-            Log.d("Room: ", room.getId());
-            boolean isFavorite = false;
 
             roomRepository.addToFavorites(room.getId(),auth.getCurrentUser().getUid(), (s) -> {
                 if (s) {
@@ -82,6 +83,12 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
                 }
             }, (e) -> {Log.d("fail: ", e.getMessage());});
 
+        });
+
+        holder.itemView.setOnClickListener(view -> {
+            Fragment fragment = new RoomDetailActivity(room);
+            AppCompatActivity activity = (AppCompatActivity) view.getContext();
+            activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
         });
     }
 

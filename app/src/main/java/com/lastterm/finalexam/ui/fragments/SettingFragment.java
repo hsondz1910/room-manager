@@ -1,5 +1,6 @@
 package com.lastterm.finalexam.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +13,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.lastterm.finalexam.MainActivity;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.ui.account.EditProfileFragment;
+import com.lastterm.finalexam.ui.account.LoginActivity;
 
 public class SettingFragment extends Fragment {
     private TextView tvUsername, tvEmail, tvPhone, tvRole;
@@ -52,6 +55,8 @@ public class SettingFragment extends Fragment {
         btnLogout.setOnClickListener(v -> {
             mAuth.signOut();
             Toast.makeText(getActivity(), "Logged out successfully", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            startActivity(intent);
             getActivity().finish();
         });
 
