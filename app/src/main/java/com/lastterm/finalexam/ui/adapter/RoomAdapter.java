@@ -71,15 +71,23 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             popupMenu.show();
         });
 
+        if (room.isFavorite()) {
+            holder.heartIcon.setImageResource(R.drawable.ic_heart_filled);
+        }
+
         holder.heartIcon.setOnClickListener(view -> {
             FirebaseAuth auth = FirebaseAuth.getInstance();
             RoomRepository roomRepository = new RoomRepository();
 
             roomRepository.addToFavorites(room.getId(),auth.getCurrentUser().getUid(), (s) -> {
                 if (s) {
+                    holder.heartIcon.setImageResource(R.drawable.ic_heart_filled);
                     Toast.makeText(context, "Đã thêm vào mục yêu thích", Toast.LENGTH_SHORT).show();
+
                 } else {
-                    Toast.makeText(context, "Đã có trong mục yêu thích", Toast.LENGTH_SHORT).show();
+                    holder.heartIcon.setImageResource(R.drawable.ic_heart_empty);
+                    roomRepository.removeFromFavorites(room.getId(), auth.getCurrentUser().getUid(), (e) -> {}, (e) -> {});
+                    Toast.makeText(context, "Đã xóa khỏi mục yêu thích", Toast.LENGTH_SHORT).show();
                 }
             }, (e) -> {Log.d("fail: ", e.getMessage());});
 

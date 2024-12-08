@@ -1,5 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/action_detail"
+        android:title="Thông tin"
+        />
+    <item
         android:id="@+id/action_delete"
         android:title="Delete"
         />

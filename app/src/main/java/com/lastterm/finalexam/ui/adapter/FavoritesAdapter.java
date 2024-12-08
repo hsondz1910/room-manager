@@ -12,12 +12,15 @@ import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
+import com.lastterm.finalexam.ui.room.RoomDetailActivity;
 
 import java.util.List;
 
@@ -73,6 +76,11 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
                 showDialog(position);
                 Toast.makeText(context, "Đã xóa phòng " + favoriteRooms.get(position).getTitle() + "khỏi mục yêu thích", Toast.LENGTH_SHORT).show();
                 return true;
+            }
+            if (item.getItemId() == R.id.action_detail) {
+                Fragment fragment = new RoomDetailActivity(favoriteRooms.get(position));
+                AppCompatActivity activity = (AppCompatActivity) view.getContext();
+                activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
             }
             return false;
         });

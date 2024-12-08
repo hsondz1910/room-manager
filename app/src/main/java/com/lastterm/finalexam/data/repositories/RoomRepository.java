@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -42,12 +43,32 @@ public class RoomRepository {
                             room.setId(document.getId());
                             rooms.add(room);
                         }
+
+                        //Set favorite for room which is in user's favorite list
+                        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        db.collection("users").document(userId).collection("favorites")
+                                .get()
+                                .addOnCompleteListener(com -> {
+                                    if (com.isSuccessful() && com.getResult() != null) {
+                                        for (QueryDocumentSnapshot document : com.getResult()) {
+                                            String roomId = document.getId();
+                                            for (Room room : rooms) {
+                                                if (room.getId().equals(roomId)) {
+                                                    room.setFavorite(true);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    callback.accept(rooms);
+                                });
                         callback.accept(rooms);
                     } else {
                         callback.accept(new ArrayList<>());
                     }
                 });
     }
+
 
     public void searchRooms(RoomFilter filter, OnSuccessListener<List<Room>> onSuccess) {
         Query query = db.collection("rooms");
@@ -127,6 +148,7 @@ public class RoomRepository {
                             if(room.getId() == null) {
                             }
                             if (room != null) {
+                                room.setFavorite(true);
                                 favoriteRooms.add(room);
                             }
 

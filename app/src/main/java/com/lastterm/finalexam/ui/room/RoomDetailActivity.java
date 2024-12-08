@@ -1,5 +1,6 @@
 package com.lastterm.finalexam.ui.room;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,8 @@ public class RoomDetailActivity extends Fragment {
 
     Room room;
 
+    RoomRepository repository;
+
     public RoomDetailActivity(Room room) {
         this.room = room;
     }
@@ -43,32 +46,62 @@ public class RoomDetailActivity extends Fragment {
         addToFavoritesButton = view.findViewById(R.id.button_add_to_favorites);
         roomImage = view.findViewById(R.id.room_image);
 
+        repository = new RoomRepository();
+
         roomTitleTextView.setText(room.getTitle());
         roomPriceTextView.setText("Giá: " + String.format("%,.2f VND", room.getPrice()));
         roomAreaTextView.setText("Khu vực: " + room.getAddress());
         roomDescriptionTextView.setText(room.getDescription());
 
+        if (room.isFavorite()) {
+            addToFavoritesButton.setText("Xóa khỏi mục yêu thích");
+            addToFavoritesButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showDialog(room);
 
+                }
+            });
 
-        addToFavoritesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth auth = FirebaseAuth.getInstance();
-                RoomRepository roomRepository = new RoomRepository();
+        }
+        else {
+            addToFavoritesButton.setText("Thêm vào yêu thích");
+            addToFavoritesButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FirebaseAuth auth = FirebaseAuth.getInstance();
+                    RoomRepository roomRepository = new RoomRepository();
 
-                roomRepository.addToFavorites(room.getId(),auth.getCurrentUser().getUid(), (s) -> {
-                    if (s) {
-                        Toast.makeText(getContext(), "Đã thêm vào mục yêu thích", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getContext(), "Đã có trong mục yêu thích", Toast.LENGTH_SHORT).show();
-                    }
-                }, (e) -> {
-                    Log.d("fail: ", e.getMessage());});
-            }
-        });
-
+                    roomRepository.addToFavorites(room.getId(),auth.getCurrentUser().getUid(), (s) -> {
+                        if (s) {
+                            Toast.makeText(getContext(), "Đã thêm vào mục yêu thích", Toast.LENGTH_SHORT).show();
+                        }
+                    }, (e) -> {
+                        Log.d("fail: ", e.getMessage());});
+                    room.setFavorite(true);
+                    addToFavoritesButton.setText("Xóa khỏi mục yêu thích");
+                }
+            });
+        }
 
 
         return view;
+    }
+
+    private void showDialog(Room room) {
+        String roomTile = room.getTitle();
+        String roomId = room.getId();
+        new AlertDialog.Builder(getContext())
+                .setTitle("Confirm Deletion")
+                .setMessage("Bạn có muốn xóa phòng " + roomTile + " ra khởi mục yêu thích không?")
+                .setPositiveButton("Có", (dialog, which) -> {
+                    FirebaseAuth auth = FirebaseAuth.getInstance();
+                    repository.removeFromFavorites(roomId, auth.getCurrentUser().getUid(), null, null);
+                    Toast.makeText(getContext(), "Đã xóa phòng " + room.getTitle() + "khỏi mục yêu thích", Toast.LENGTH_SHORT).show();
+                    room.setFavorite(false);
+                    addToFavoritesButton.setText("Thêm vào yêu thích");
+                })
+                .setNegativeButton("Không", null)
+                .create().show();
     }
 }
