@@ -15,7 +15,7 @@ public class Room {
     private boolean isFavorite;
     private boolean isSelected;
     private String ownerId;
-    private String imageUrl; // Thêm trường imageUrl
+     // Thêm trường imageUrl
 
     public Room() {}
 
@@ -31,7 +31,7 @@ public class Room {
         this.isFavorite = isFavorite;
         this.isSelected = isSelected;
         this.ownerId = ownerId;
-        this.imageUrl = imageUrl; // Khởi tạo giá trị imageUrl
+         // Khởi tạo giá trị imageUrl
     }
 
     public String getOwnerId() {
@@ -122,12 +122,4 @@ public class Room {
         isSelected = selected;
     }
 
-    // Thêm getter và setter cho imageUrl
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
 }
