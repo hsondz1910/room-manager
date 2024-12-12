@@ -22,10 +22,10 @@
             android:orientation="vertical">
 
             <!-- Room Image -->
-            <ImageView
+            <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/room_image"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="310dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/placeholder_img" />
 
