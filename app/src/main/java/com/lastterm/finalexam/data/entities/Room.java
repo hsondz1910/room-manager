@@ -122,7 +122,6 @@ public class Room {
         isSelected = selected;
     }
 
-    // Thêm getter và setter cho imageUrl
     public String getImageUrl() {
         return imageUrl;
     }

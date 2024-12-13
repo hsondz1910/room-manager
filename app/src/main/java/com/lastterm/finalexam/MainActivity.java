@@ -157,8 +157,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void replaceFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, fragment);  // R.id.fragment_container là ID của container chứa fragment
-        transaction.addToBackStack(null);  // Nếu muốn cho phép quay lại fragment trước đó
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
         transaction.commit();
     }
 }
