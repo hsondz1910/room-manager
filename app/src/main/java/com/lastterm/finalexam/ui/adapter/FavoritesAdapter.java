@@ -2,6 +2,7 @@ package com.lastterm.finalexam.ui.adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.Room;
@@ -48,6 +50,18 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         holder.text_favorite_title.setText(room.getTitle());
         holder.text_favorite_description.setText(room.getDescription());
         holder.itemView.setOnClickListener(view -> {showPopupMenu(view, position);});
+        Log.d("Error", " image :" + room.getImgUrls().isEmpty());
+        if(!room.getImgUrls().isEmpty()){
+            try {
+                Glide.with(context).load(room.getImgUrls().get(0)).into(holder.image_favorite);
+                Log.d("Error", "Error loading image :" + Glide.with(context).load(room.getImgUrls().get(0)));
+            } catch (Exception e) {
+                Log.d("Error", "Error loading image :" + e.getMessage());
+            }
+
+        }
+
+
     }
 
     @Override

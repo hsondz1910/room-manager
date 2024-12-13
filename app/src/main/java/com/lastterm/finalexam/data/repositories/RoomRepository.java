@@ -41,6 +41,8 @@ public class RoomRepository {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Room room = document.toObject(Room.class);
                             room.setId(document.getId());
+
+
                             rooms.add(room);
                         }
 

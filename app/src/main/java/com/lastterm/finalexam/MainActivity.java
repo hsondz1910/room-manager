@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-
     }
 
     private void loadDefaultFragment(String role) {
@@ -146,11 +145,11 @@ public class MainActivity extends AppCompatActivity {
 
     private Fragment getDefaultFragmentForRole(String role) {
         if ("tenant".equals(role)) {
-            return new TenantHomeFragment();
+            return new SearchFragment();  // Default Fragment for tenant
         } else if ("owner".equals(role)) {
-            return new OwnerHomeFragment();
+            return new RoomManagementFragment();  // Default Fragment for owner
         } else if ("admin".equals(role)) {
-            return new AdminHomeFragment();
+            return new AdminHomeFragment();  // Default Fragment for admin
         }
         return null;
     }

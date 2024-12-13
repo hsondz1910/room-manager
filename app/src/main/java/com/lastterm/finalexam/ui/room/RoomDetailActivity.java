@@ -13,16 +13,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
+import com.lastterm.finalexam.ui.adapter.ImageSliderAdapter;
 
 public class RoomDetailActivity extends Fragment {
     TextView roomTitleTextView, roomPriceTextView, roomAreaTextView, roomDescriptionTextView;
     TextView bookButton, addToFavoritesButton;
-    ImageView roomImage;
+    ViewPager2 roomViewPager;
 
     Room room;
 
@@ -44,7 +46,8 @@ public class RoomDetailActivity extends Fragment {
         roomDescriptionTextView = view.findViewById(R.id.room_description);
         bookButton = view.findViewById(R.id.button_book);
         addToFavoritesButton = view.findViewById(R.id.button_add_to_favorites);
-        roomImage = view.findViewById(R.id.room_image);
+
+        roomViewPager = view.findViewById(R.id.room_image);
 
         repository = new RoomRepository();
 
@@ -80,8 +83,20 @@ public class RoomDetailActivity extends Fragment {
                         Log.d("fail: ", e.getMessage());});
                     room.setFavorite(true);
                     addToFavoritesButton.setText("Xóa khỏi mục yêu thích");
+
+
                 }
             });
+        }
+        Log.d("Error", "Urls: " + room.getImgUrls().isEmpty());
+        if(!room.getImgUrls().isEmpty()){
+            Log.d("Error", "Urls: " + room.getImgUrls());
+            try {
+                ImageSliderAdapter adapter = new ImageSliderAdapter(getContext(), room.getImgUrls());
+                roomViewPager.setAdapter(adapter);
+            } catch (Exception e) {
+                Log.d("Error", "Error loading image :" + e.getMessage());
+            }
         }
 
 

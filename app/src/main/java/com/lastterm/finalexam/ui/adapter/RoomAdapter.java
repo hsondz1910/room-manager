@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.Room;
@@ -98,6 +99,16 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             AppCompatActivity activity = (AppCompatActivity) view.getContext();
             activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
         });
+
+        if(!room.getImgUrls().isEmpty()){
+            try {
+                Glide.with(context).load(room.getImgUrls().get(0)).into(holder.roomImg);
+                Log.d("Error", "Error loading image :" + Glide.with(context).load(room.getImgUrls().get(0)));
+            } catch (Exception e) {
+                Log.d("Error", "Error loading image :" + e.getMessage());
+            }
+
+        }
     }
 
     @Override
@@ -108,7 +119,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     public static class RoomViewHolder extends RecyclerView.ViewHolder {
 
         TextView roomTitle, roomPrice, roomAddress;
-        ImageView menuIcon, heartIcon;
+        ImageView menuIcon, heartIcon, roomImg;
 
         public RoomViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -117,6 +128,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             roomAddress = itemView.findViewById(R.id.roomAddress);
             menuIcon = itemView.findViewById(R.id.menuIcon);
             heartIcon = itemView.findViewById(R.id.heartIcon);
+            roomImg = itemView.findViewById(R.id.roomImage);
         }
     }
 
