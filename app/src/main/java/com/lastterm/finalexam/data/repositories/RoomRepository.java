@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -11,8 +13,12 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.lastterm.finalexam.data.entities.RoomFilter;
 import com.lastterm.finalexam.data.entities.Room;
+import com.lastterm.finalexam.data.entities.uComment;
 
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,9 +26,11 @@ import java.util.function.Consumer;
 
 public class RoomRepository {
     private FirebaseFirestore db;
+    private FirebaseAuth auth;
 
     public RoomRepository() {
         db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
     }
 
     public void addRoom(Room room, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
@@ -179,6 +187,82 @@ public class RoomRepository {
             room.setId(roomId);
             onSuccess.onSuccess(room);
         });
+    }
+
+    public void getNameByUserID(String userId, Consumer<String> callback) {
+        db.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
+            String name = documentSnapshot.getString("name");
+            callback.accept(name);
+        });
+    }
+
+    public void getCommentByRoomId(String roomId, String rate, OnSuccessListener<List<uComment>> onSuccess) {
+        db.collection("comments").document(roomId).collection(rate)
+                .orderBy("date", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(docs -> {
+                    if (docs.isSuccessful()) {
+                        List<uComment> comments = new ArrayList<>();
+                        List<Task<Void>> tasks = new ArrayList<>(); // Track asynchronous tasks
+
+                        for (QueryDocumentSnapshot doc : docs.getResult()) {
+                            uComment comment = doc.toObject(uComment.class);
+
+                            // Task for fetching user names
+                            Task<Void> task = db.collection("users")
+                                    .document(comment.getUserId())
+                                    .get()
+                                    .continueWith(taskSnapshot -> {
+                                        if (taskSnapshot.isSuccessful() && taskSnapshot.getResult() != null) {
+                                            String name = taskSnapshot.getResult().getString("fullName");
+                                            comment.setName(name); // Set the name
+                                        }
+                                        comments.add(comment); // Add comment to the list after setting the name
+                                        return null;
+                                    });
+                            tasks.add(task); // Add the task to the list
+                        }
+
+                        // Wait for all tasks to complete
+                        Tasks.whenAll(tasks)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("Firestore", "All tasks completed. Returning comments.");
+                                    onSuccess.onSuccess(comments); // Pass the completed list
+                                })
+                                .addOnFailureListener(e -> Log.d("Firestore", "Error resolving names.", e));
+                    } else {
+                        Log.d("Firestore", "Error getting documents.", docs.getException());
+                    }
+                });
+    }
+
+    public void addComment(String roomId, String comment, String rate, OnSuccessListener<String> onSuccess, OnFailureListener onFailure) {
+
+        String userID = auth.getUid();
+        if(userID != null){
+            Log.d("TAG", "addComment: ");
+            db.collection("users").document(userID).get().addOnCompleteListener((snap) ->{
+
+                if(snap.isSuccessful()){
+                    String userName = snap.getResult().getString("name");
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date date = new Date();
+                    uComment cm = new uComment("", userID, userName, rate, date, comment);
+                    Log.d("TAG1", "addComment: ");
+                    db.collection("comments").document(roomId).collection(rate)
+                            .add(cm.toJson())
+                            .addOnSuccessListener(doc -> {
+                                onSuccess.onSuccess(doc.getId());
+                            })
+                            .addOnFailureListener(onFailure);
+                }
+            });
+
+        }else {
+            Log.e("TAG", "User ID is null");
+            onFailure.onFailure(new Exception("User ID is null"));
+        }
+
     }
 
 }

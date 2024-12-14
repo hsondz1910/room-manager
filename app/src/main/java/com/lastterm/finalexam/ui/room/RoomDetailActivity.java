@@ -13,20 +13,38 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.lastterm.finalexam.R;
+
 import com.lastterm.finalexam.data.entities.Room;
+import com.lastterm.finalexam.data.entities.uComment;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
+
+import com.lastterm.finalexam.ui.adapter.CommentApdapter;
 import com.lastterm.finalexam.ui.adapter.ImageSliderAdapter;
+
+
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class RoomDetailActivity extends Fragment {
     TextView roomTitleTextView, roomPriceTextView, roomAreaTextView, roomDescriptionTextView;
     TextView bookButton, addToFavoritesButton;
     ViewPager2 roomViewPager;
 
+    TextView labelGood, labelNormal, labelBad;
+    RecyclerView recyclerView;
+    CommentApdapter cmAdapter;
+
     Room room;
+    ArrayList<uComment> comments;
+    ArrayList<uComment> goodComments;
+    ArrayList<uComment> normalComments;
+    ArrayList<uComment> bedComments;
 
     RoomRepository repository;
 
@@ -48,6 +66,16 @@ public class RoomDetailActivity extends Fragment {
         addToFavoritesButton = view.findViewById(R.id.button_add_to_favorites);
 
         roomViewPager = view.findViewById(R.id.room_image);
+
+        labelGood = view.findViewById(R.id.label_good);
+        labelNormal = view.findViewById(R.id.label_normal);
+        labelBad = view.findViewById(R.id.label_bad);
+        recyclerView = view.findViewById(R.id.comments_List);
+
+        comments = new ArrayList<>();
+        goodComments = new ArrayList<>();
+        normalComments = new ArrayList<>();
+        bedComments = new ArrayList<>();
 
         repository = new RoomRepository();
 
@@ -88,9 +116,9 @@ public class RoomDetailActivity extends Fragment {
                 }
             });
         }
-        Log.d("Error", "Urls: " + room.getImgUrls().isEmpty());
+
         if(!room.getImgUrls().isEmpty()){
-            Log.d("Error", "Urls: " + room.getImgUrls());
+
             try {
                 ImageSliderAdapter adapter = new ImageSliderAdapter(getContext(), room.getImgUrls());
                 roomViewPager.setAdapter(adapter);
@@ -98,6 +126,34 @@ public class RoomDetailActivity extends Fragment {
                 Log.d("Error", "Error loading image :" + e.getMessage());
             }
         }
+
+        loadCOmment();
+        ArrayList<TextView> labels = new ArrayList<>();
+        labels.add(labelGood);
+        labels.add(labelNormal);
+        labels.add(labelBad);
+        labels.forEach(label -> {
+            label.setOnClickListener(view1 -> {
+                for (TextView lbl : labels) {
+                    lbl.setSelected(false);
+                }
+
+                label.setSelected(true);
+                switch (label.getText().toString()){
+                    case "Tốt":
+                        cmAdapter.setComments(goodComments);
+                        break;
+                    case "Bình thường":
+                        cmAdapter.setComments(normalComments);
+                        break;
+                    case "Không tốt":
+                        cmAdapter.setComments(bedComments);
+                        break;
+                }
+
+            });
+        });
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
 
         return view;
@@ -118,5 +174,24 @@ public class RoomDetailActivity extends Fragment {
                 })
                 .setNegativeButton("Không", null)
                 .create().show();
+    }
+
+    private void loadCOmment() {
+        repository.getCommentByRoomId(room.getId(), "good", (comments) -> {
+            goodComments.addAll(comments);
+
+        });
+        repository.getCommentByRoomId(room.getId(), "normal", (comments) -> {
+            normalComments.addAll(comments);
+        });
+        repository.getCommentByRoomId(room.getId(), "bbd", (comments) -> {
+            normalComments.addAll(comments);
+        });
+        comments.addAll(goodComments);
+        comments.addAll(normalComments);
+        comments.addAll(bedComments);
+        comments.sort(Comparator.comparing(comment -> comment.getDate()));
+        cmAdapter = new CommentApdapter(comments);
+        recyclerView.setAdapter(cmAdapter);
     }
 }

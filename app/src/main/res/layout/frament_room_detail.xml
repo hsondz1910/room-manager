@@ -10,7 +10,7 @@
         android:layout_height="0dp"
         android:background="#FFFFFF"
         android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -73,37 +73,84 @@
                 android:textColor="#757575"
                 android:textSize="14sp" />
 
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <Button
+                    android:id="@+id/button_book"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="Book Now"
+                    android:textColor="#FFFFFF" />
+
+                <Button
+                    android:id="@+id/button_add_to_favorites"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="Add to Favorites"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/label_good"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Tốt"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:background="@drawable/label_background"
+                    android:textColor="@color/default_text_color" />
+
+                <TextView
+                    android:id="@+id/label_normal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Bình thường"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:background="@drawable/label_background"
+                    android:textColor="@color/default_text_color" />
+
+                <TextView
+                    android:id="@+id/label_bad"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Không tốt"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:background="@drawable/label_background"
+                    android:textColor="@color/default_text_color" />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/comments_List"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <Button
-            android:id="@+id/button_book"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:text="Book Now"
-            android:textColor="#FFFFFF" />
-
-        <Button
-            android:id="@+id/button_add_to_favorites"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:text="Add to Favorites"
-            android:textColor="#FFFFFF" />
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
