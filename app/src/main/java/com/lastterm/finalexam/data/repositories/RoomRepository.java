@@ -11,6 +11,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.lastterm.finalexam.data.entities.ChatRoom;
+import com.lastterm.finalexam.data.entities.MessageClass;
 import com.lastterm.finalexam.data.entities.RoomFilter;
 import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.data.entities.uComment;
@@ -263,6 +266,124 @@ public class RoomRepository {
             onFailure.onFailure(new Exception("User ID is null"));
         }
 
+    }
+
+    public boolean isCurrentUser(String id){
+        return auth.getUid().equals(id);
+    }
+
+    public void creatChatRoom(String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure){
+        ChatRoom chatRoom = new ChatRoom(userIDSent, userIDReceiver);
+        try {
+            db.collection("chatRooms").add(chatRoom).addOnSuccessListener(documentReference -> {
+                chatRoom.setId(documentReference.getId());
+                onSuccess.onSuccess(chatRoom);
+            }).addOnFailureListener(onFailure);
+        } catch (Exception e) {
+            Log.d("Create chat room: ", e.getMessage());
+        }
+    }
+
+    public void  getChatRoomWithID(String roomId, OnSuccessListener<ChatRoom> onSuccess){
+        try {
+            db.collection("chatRooms").document(roomId).get().addOnCompleteListener(documentSnapshot -> {
+                    DocumentSnapshot doc = documentSnapshot.getResult();
+                    ChatRoom chatRoom = doc.toObject(ChatRoom.class);
+                    chatRoom.setId(doc.getId());
+                    onSuccess.onSuccess(chatRoom);
+            });
+        }catch (Exception e) {
+            Log.d("Get Room by id: ", e.getMessage());
+        }
+
+    }
+
+    public void findChatRoom(String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure){
+        db.collection("chatRooms")
+                .whereArrayContains("users", userIDSent)
+                .whereArrayContains("users", userIDReceiver)
+                .get()
+                .addOnCompleteListener(snapshot -> {
+                    if (snapshot.isSuccessful() && snapshot.getResult().size() > 0) {
+                        QuerySnapshot doc = snapshot.getResult();
+                        ChatRoom chatRoom = doc.getDocuments().get(0).toObject(ChatRoom.class);
+                        onSuccess.onSuccess(chatRoom);
+                    } else {
+                        creatChatRoom(userIDSent, userIDReceiver, (chatRoom) -> {onSuccess.onSuccess(chatRoom);}, (e) -> {onFailure.onFailure(e);});
+                    }
+                });
+    }
+    public void getAllChatRoomSupport(OnSuccessListener<List<ChatRoom>> onSuccess, OnFailureListener onFailure){
+        try {
+            db.collection("chatRooms").whereEqualTo("users", "Support").get().addOnCompleteListener(snapshot -> {
+                if(snapshot.isSuccessful()){
+                    List<ChatRoom> chatRooms = new ArrayList<>();
+                    for(QueryDocumentSnapshot doc : snapshot.getResult()){
+                        ChatRoom chatRoom = doc.toObject(ChatRoom.class);
+                        chatRoom.setId(doc.getId());
+                        chatRooms.add(chatRoom);
+                    }
+                    onSuccess.onSuccess(chatRooms);
+                }
+            });
+        } catch (Exception e) {
+            Log.d("getAllRoomSupport", "getAllChatRoomSupport: " + e.getMessage());
+        }
+    }
+
+    public void getAllChatRoomOfUser(String userID, OnSuccessListener<List<ChatRoom>> onSuccess, OnFailureListener onFailure){
+        try {
+            db.collection("chatRooms").whereArrayContains("users", userID).get().addOnCompleteListener(snapshot -> {
+                if(snapshot.isSuccessful()){
+                    List<ChatRoom> chatRooms = new ArrayList<>();
+                    for(QueryDocumentSnapshot doc : snapshot.getResult()){
+                        ChatRoom chatRoom = doc.toObject(ChatRoom.class);
+                        chatRoom.setId(doc.getId());
+                        chatRooms.add(chatRoom);
+                    }
+                    onSuccess.onSuccess(chatRooms);
+                }
+            });
+        } catch (Exception e) {
+            Log.d("getAllChatRoomOfUser", "getAllChatRoomOfUser: " + e.getMessage());
+        }
+    }
+
+    public void sentMessage(String roomId, MessageClass message, OnSuccessListener<MessageClass> onSuccess, OnFailureListener onFailure){
+        try {
+            db.collection("chatRooms").document(roomId).collection("messages").add(message).addOnCompleteListener((doc) -> {
+                if(doc.isSuccessful()){
+                    message.setId(doc.getResult().getId());
+                    onSuccess.onSuccess(message);
+                }
+            });
+        } catch (Exception e) {
+            Log.d("sentMessage", "sentMessage: " + e.getMessage());
+        }
+    }
+
+    public void listenToMessages(String roomId, OnSuccessListener<List<MessageClass>> onSuccess, OnFailureListener onFailure) {
+        db.collection("chatRooms")
+                .document(roomId)
+                .collection("messages")
+                .orderBy("date")
+                .addSnapshotListener((querySnapshot, e) -> {
+                    if (e != null) {
+                        onFailure.onFailure(e);
+                        return;
+                    }
+
+                    if (querySnapshot != null) {
+                        List<MessageClass> messageList = new ArrayList<>();
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                            MessageClass message = document.toObject(MessageClass.class);
+                            if (message != null) {
+                                messageList.add(message);
+                            }
+                        }
+                        onSuccess.onSuccess(messageList);
+                    }
+                });
     }
 
 }

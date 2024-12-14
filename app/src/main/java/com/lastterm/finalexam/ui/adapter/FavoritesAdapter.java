@@ -54,7 +54,6 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         if(!room.getImgUrls().isEmpty()){
             try {
                 Glide.with(context).load(room.getImgUrls().get(0)).into(holder.image_favorite);
-                Log.d("Error", "Error loading image :" + Glide.with(context).load(room.getImgUrls().get(0)));
             } catch (Exception e) {
                 Log.d("Error", "Error loading image :" + e.getMessage());
             }
