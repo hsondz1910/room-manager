@@ -120,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
 
             } else if ("admin".equals(userRole)) {
                 // Fragment cho Admin
-
             }
 
             // Replace Fragment

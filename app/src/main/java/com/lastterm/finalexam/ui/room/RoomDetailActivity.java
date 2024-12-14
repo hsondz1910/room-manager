@@ -52,7 +52,6 @@ public class RoomDetailActivity extends Fragment {
         this.room = room;
     }
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

@@ -8,6 +8,7 @@ public class MessageClass {
     String senderID;
     String date;
     String img;
+
     public MessageClass() {
     }
 

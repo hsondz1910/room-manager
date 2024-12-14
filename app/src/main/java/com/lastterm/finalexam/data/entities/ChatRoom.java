@@ -6,9 +6,9 @@ public class ChatRoom {
     String id;
     List<String> users;
     List<MessageClass> messages;
+
     public ChatRoom() {
     }
-
 
     public ChatRoom(String id, List<String> users, List<MessageClass> messages) {
         this.id = id;
