@@ -19,4 +19,8 @@
     <string name="settings">Cài đặt</string>
     <string name="room_management">Quản lý phòng trọ</string>
     <string name="create_post">Đăng bài</string>
+    <string name="xem_chi_ti_t">Xem chi tiết</string>
+    <string name="room_title">Room Title</string>
+    <string name="price">Price</string>
+    <string name="address">Address</string>
 </resources>

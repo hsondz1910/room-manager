@@ -9,4 +9,5 @@
     <color name="selected_text_color">#FFFFFF</color>
     <color name="reciver">#97FFE7</color>
     <color name="sender">#9BFF8B</color>
+    <color name="button_background">#6200EE</color>
 </resources>

@@ -1,12 +1,14 @@
 package com.lastterm.finalexam.ui.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,30 +50,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         holder.roomPrice.setText(String.format("%,.2f VND", room.getPrice()));
         holder.roomAddress.setText(room.getAddress());
 
-        holder.menuIcon.setOnClickListener(view -> {
-            PopupMenu popupMenu = new PopupMenu(context, holder.menuIcon);
-            popupMenu.inflate(R.menu.popup_room_management_menu);
-
-            popupMenu.setOnMenuItemClickListener(menuItem -> {
-                int id = menuItem.getItemId();
-                if (id == R.id.action_select) {
-                    Toast.makeText(context, "Select " + room.getTitle(), Toast.LENGTH_SHORT).show();
-                    return true;
-                } else if (id == R.id.action_edit) {
-                    Toast.makeText(context, "Edit " + room.getTitle(), Toast.LENGTH_SHORT).show();
-                    return true;
-                } else if (id == R.id.action_delete) {
-                    Toast.makeText(context, "Delete " + room.getTitle(), Toast.LENGTH_SHORT).show();
-                    roomList.remove(holder.getAdapterPosition());
-                    notifyItemRemoved(holder.getAdapterPosition());
-                    return true;
-                }
-                return false;
-            });
-
-            popupMenu.show();
-        });
-
         if (room.isFavorite()) {
             holder.heartIcon.setImageResource(R.drawable.ic_heart_filled);
         }
@@ -84,7 +62,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
                 if (s) {
                     holder.heartIcon.setImageResource(R.drawable.ic_heart_filled);
                     Toast.makeText(context, "Đã thêm vào mục yêu thích", Toast.LENGTH_SHORT).show();
-
                 } else {
                     holder.heartIcon.setImageResource(R.drawable.ic_heart_empty);
                     roomRepository.removeFromFavorites(room.getId(), auth.getCurrentUser().getUid(), (e) -> {}, (e) -> {});
@@ -100,6 +77,26 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
         });
 
+        holder.detailButton.setOnClickListener(view -> {
+            Fragment fragment = new RoomDetailActivity(room);
+
+            // Unwrap ContextWrapper to get the Activity
+            Activity activity = unwrap(view.getContext());
+
+            if (activity instanceof AppCompatActivity) {
+                // If the Activity is an instance of AppCompatActivity, use getSupportFragmentManager
+                ((AppCompatActivity) activity).getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            } else {
+                // Handle the case where the Activity is not an instance of AppCompatActivity
+                Log.e("RoomAdapter", "Activity is not an instance of AppCompatActivity");
+                Toast.makeText(context, "Error: Unable to open details", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         if(!room.getImgUrls().isEmpty()){
             try {
                 Glide.with(context).load(room.getImgUrls().get(0)).into(holder.roomImg);
@@ -107,9 +104,16 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             } catch (Exception e) {
                 Log.d("Error", "Error loading image :" + e.getMessage());
             }
-
         }
     }
+
+    private static Activity unwrap(Context context) {
+        while (!(context instanceof Activity) && context instanceof ContextWrapper) {
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        return (Activity) context;
+    }
+
 
     @Override
     public int getItemCount() {
@@ -119,17 +123,17 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     public static class RoomViewHolder extends RecyclerView.ViewHolder {
 
         TextView roomTitle, roomPrice, roomAddress;
-        ImageView menuIcon, heartIcon, roomImg;
+        ImageView heartIcon, roomImg;
+        Button detailButton;
 
         public RoomViewHolder(@NonNull View itemView) {
             super(itemView);
             roomTitle = itemView.findViewById(R.id.roomTitle);
             roomPrice = itemView.findViewById(R.id.roomPrice);
             roomAddress = itemView.findViewById(R.id.roomAddress);
-            menuIcon = itemView.findViewById(R.id.menuIcon);
             heartIcon = itemView.findViewById(R.id.heartIcon);
             roomImg = itemView.findViewById(R.id.roomImage);
+            detailButton = itemView.findViewById(R.id.detailButton);
         }
     }
-
 }

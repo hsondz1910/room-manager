@@ -53,7 +53,6 @@ public class RoomRepository {
                             Room room = document.toObject(Room.class);
                             room.setId(document.getId());
 
-
                             rooms.add(room);
                         }
 
@@ -116,21 +115,18 @@ public class RoomRepository {
                     if (documentSnapshot.exists()) {
                         onSuccess.onSuccess(false);
                     } else {
-                        // Lưu phòng vào danh sách yêu thích của người dùng
                         db.collection("users").document(userId)
                                 .collection("favorites")
                                 .document(roomId)
-                                .set(new HashMap<>());  // Lưu một document trống với roomId là ID
+                                .set(new HashMap<>());
                         onSuccess.onSuccess(true);
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore Error", "Error fetching document", e);
                 });
-
-
-
     }
+
     public void isFavorite(String userId, String roomId, OnSuccessListener<Boolean> onSuccess, OnFailureListener onFailure) {
         db.collection("users").document(userId)
                 .collection("favorites")
@@ -149,7 +145,7 @@ public class RoomRepository {
                 .addOnSuccessListener(querySnapshot -> {
                     List<Room> favoriteRooms = new ArrayList<>();
 
-                    if(querySnapshot.size() == 0) {
+                    if (querySnapshot.size() == 0) {
                         onSuccess.onSuccess(favoriteRooms);
                         return;
                     }
@@ -158,14 +154,13 @@ public class RoomRepository {
                     for (QueryDocumentSnapshot document : querySnapshot) {
                         String roomId = document.getId();
                         getRoomById(roomId, room -> {
-                            if(room.getId() == null) {
+                            if (room.getId() == null) {
                             }
                             if (room != null) {
                                 room.setFavorite(true);
                                 favoriteRooms.add(room);
                             }
 
-                            // Kiểm tra xem đã tải xong tất cả phòng chưa
                             if (roomsLoaded.incrementAndGet() == querySnapshot.size()) {
                                 onSuccess.onSuccess(favoriteRooms);
                             }
@@ -242,11 +237,11 @@ public class RoomRepository {
     public void addComment(String roomId, String comment, String rate, OnSuccessListener<String> onSuccess, OnFailureListener onFailure) {
 
         String userID = auth.getUid();
-        if(userID != null){
+        if (userID != null) {
             Log.d("TAG", "addComment: ");
-            db.collection("users").document(userID).get().addOnCompleteListener((snap) ->{
+            db.collection("users").document(userID).get().addOnCompleteListener((snap) -> {
 
-                if(snap.isSuccessful()){
+                if (snap.isSuccessful()) {
                     String userName = snap.getResult().getString("name");
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = new Date();
@@ -261,18 +256,18 @@ public class RoomRepository {
                 }
             });
 
-        }else {
+        } else {
             Log.e("TAG", "User ID is null");
             onFailure.onFailure(new Exception("User ID is null"));
         }
 
     }
 
-    public boolean isCurrentUser(String id){
+    public boolean isCurrentUser(String id) {
         return auth.getUid().equals(id);
     }
 
-    public void creatChatRoom(String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure){
+    public void creatChatRoom(String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure) {
         ChatRoom chatRoom = new ChatRoom(userIDSent, userIDReceiver);
         try {
             db.collection("chatRooms").add(chatRoom).addOnSuccessListener(documentReference -> {
@@ -284,21 +279,21 @@ public class RoomRepository {
         }
     }
 
-    public void  getChatRoomWithID(String roomId, OnSuccessListener<ChatRoom> onSuccess){
+    public void getChatRoomWithID(String roomId, OnSuccessListener<ChatRoom> onSuccess) {
         try {
             db.collection("chatRooms").document(roomId).get().addOnCompleteListener(documentSnapshot -> {
-                    DocumentSnapshot doc = documentSnapshot.getResult();
-                    ChatRoom chatRoom = doc.toObject(ChatRoom.class);
-                    chatRoom.setId(doc.getId());
-                    onSuccess.onSuccess(chatRoom);
+                DocumentSnapshot doc = documentSnapshot.getResult();
+                ChatRoom chatRoom = doc.toObject(ChatRoom.class);
+                chatRoom.setId(doc.getId());
+                onSuccess.onSuccess(chatRoom);
             });
-        }catch (Exception e) {
+        } catch (Exception e) {
             Log.d("Get Room by id: ", e.getMessage());
         }
 
     }
 
-    public void findChatRoom(String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure){
+    public void findChatRoom(String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure) {
         db.collection("chatRooms")
                 .whereArrayContains("users", userIDSent)
                 .whereArrayContains("users", userIDReceiver)
@@ -309,16 +304,21 @@ public class RoomRepository {
                         ChatRoom chatRoom = doc.getDocuments().get(0).toObject(ChatRoom.class);
                         onSuccess.onSuccess(chatRoom);
                     } else {
-                        creatChatRoom(userIDSent, userIDReceiver, (chatRoom) -> {onSuccess.onSuccess(chatRoom);}, (e) -> {onFailure.onFailure(e);});
+                        creatChatRoom(userIDSent, userIDReceiver, (chatRoom) -> {
+                            onSuccess.onSuccess(chatRoom);
+                        }, (e) -> {
+                            onFailure.onFailure(e);
+                        });
                     }
                 });
     }
-    public void getAllChatRoomSupport(OnSuccessListener<List<ChatRoom>> onSuccess, OnFailureListener onFailure){
+
+    public void getAllChatRoomSupport(OnSuccessListener<List<ChatRoom>> onSuccess, OnFailureListener onFailure) {
         try {
             db.collection("chatRooms").whereEqualTo("users", "Support").get().addOnCompleteListener(snapshot -> {
-                if(snapshot.isSuccessful()){
+                if (snapshot.isSuccessful()) {
                     List<ChatRoom> chatRooms = new ArrayList<>();
-                    for(QueryDocumentSnapshot doc : snapshot.getResult()){
+                    for (QueryDocumentSnapshot doc : snapshot.getResult()) {
                         ChatRoom chatRoom = doc.toObject(ChatRoom.class);
                         chatRoom.setId(doc.getId());
                         chatRooms.add(chatRoom);
@@ -331,12 +331,12 @@ public class RoomRepository {
         }
     }
 
-    public void getAllChatRoomOfUser(String userID, OnSuccessListener<List<ChatRoom>> onSuccess, OnFailureListener onFailure){
+    public void getAllChatRoomOfUser(String userID, OnSuccessListener<List<ChatRoom>> onSuccess, OnFailureListener onFailure) {
         try {
             db.collection("chatRooms").whereArrayContains("users", userID).get().addOnCompleteListener(snapshot -> {
-                if(snapshot.isSuccessful()){
+                if (snapshot.isSuccessful()) {
                     List<ChatRoom> chatRooms = new ArrayList<>();
-                    for(QueryDocumentSnapshot doc : snapshot.getResult()){
+                    for (QueryDocumentSnapshot doc : snapshot.getResult()) {
                         ChatRoom chatRoom = doc.toObject(ChatRoom.class);
                         chatRoom.setId(doc.getId());
                         chatRooms.add(chatRoom);
@@ -349,10 +349,10 @@ public class RoomRepository {
         }
     }
 
-    public void sentMessage(String roomId, MessageClass message, OnSuccessListener<MessageClass> onSuccess, OnFailureListener onFailure){
+    public void sentMessage(String roomId, MessageClass message, OnSuccessListener<MessageClass> onSuccess, OnFailureListener onFailure) {
         try {
             db.collection("chatRooms").document(roomId).collection("messages").add(message).addOnCompleteListener((doc) -> {
-                if(doc.isSuccessful()){
+                if (doc.isSuccessful()) {
                     message.setId(doc.getResult().getId());
                     onSuccess.onSuccess(message);
                 }
@@ -385,5 +385,4 @@ public class RoomRepository {
                     }
                 });
     }
-
 }
