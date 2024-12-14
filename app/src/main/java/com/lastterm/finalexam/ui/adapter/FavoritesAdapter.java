@@ -22,7 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
-import com.lastterm.finalexam.ui.room.RoomDetailActivity;
+import com.lastterm.finalexam.ui.room.RoomDetailFragment;
 
 import java.util.List;
 
@@ -91,7 +91,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
                 return true;
             }
             if (item.getItemId() == R.id.action_detail) {
-                Fragment fragment = new RoomDetailActivity(favoriteRooms.get(position));
+                Fragment fragment = new RoomDetailFragment(favoriteRooms.get(position));
                 AppCompatActivity activity = (AppCompatActivity) view.getContext();
                 activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
             }

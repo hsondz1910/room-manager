@@ -1,6 +1,7 @@
 package com.lastterm.finalexam.ui.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +21,9 @@ public class CommentApdapter extends RecyclerView.Adapter<CommentApdapter.Commen
     private ArrayList<uComment> comments;
     private Context context;
 
-    public CommentApdapter(ArrayList<uComment> comments) {
+    public CommentApdapter(ArrayList<uComment> comments, Context context) {
         this.comments = comments;
+        this.context = context;
     }
     public void setComments(ArrayList<uComment> comments) {
         this.comments = comments;
@@ -41,7 +43,10 @@ public class CommentApdapter extends RecyclerView.Adapter<CommentApdapter.Commen
         holder.txt_name.setText(comment.getName());
         holder.txt_comment.setText(comment.getComment());
         holder.txt_date.setText(new SimpleDateFormat("MM-dd-yyyy").format(comment.getDate()));
-        holder.txt_rate.setText(String.valueOf(comment.getRate()));
+        Log.d("Rate", "Rate " + comment.getRate());
+        if(comment.getRate().equals("good")) holder.txt_rate.setText("Tốt");
+        else if(comment.getRate().equals("normal")) holder.txt_rate.setText("Bình thường");
+        else holder.txt_rate.setText("Không tốt");
     }
 
     @Override

@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:weightSum="2">
+                android:weightSum="3">
 
                 <Button
                     android:id="@+id/button_book"
@@ -95,8 +95,18 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:text="Add to Favorites"
+                    android:textColor="#FFFFFF" />
+
+                <Button
+                    android:id="@+id/button_contact"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="Contact"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
 
@@ -113,7 +123,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Tốt"
+                    android:text="Good"
+                    android:hint="Good"
                     android:textSize="16sp"
                     android:gravity="center"
                     android:padding="8dp"
@@ -125,7 +136,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Bình thường"
+                    android:text="Normal"
+                    android:hint="Normal"
                     android:textSize="16sp"
                     android:gravity="center"
                     android:padding="8dp"
@@ -137,7 +149,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Không tốt"
+                    android:text="Bad"
+                    android:hint="Bad"
                     android:textSize="16sp"
                     android:gravity="center"
                     android:padding="8dp"

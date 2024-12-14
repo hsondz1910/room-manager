@@ -1,0 +1,145 @@
+package com.lastterm.finalexam.ui.chat;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.lastterm.finalexam.R;
+import com.lastterm.finalexam.data.entities.ChatRoom;
+
+import com.lastterm.finalexam.data.entities.MessageClass;
+import com.lastterm.finalexam.data.repositories.RoomRepository;
+import com.lastterm.finalexam.ui.adapter.ChatAdapter;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class ChatRoomFragment extends Fragment {
+    private RecyclerView chatRecyclerView;
+    private ChatRoom chatRoom;
+    private ChatAdapter adapter;
+    private ImageView imagePreview;
+
+    private EditText textMsg;
+    private ImageButton btnSent, btnAddImage;
+    private Uri selectedImageUri = null;
+
+    private RoomRepository repository;
+
+    private List<MessageClass> messages;
+
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
+
+    public ChatRoomFragment(String sender, String receiver) {
+        chatRoom = new ChatRoom(sender, receiver);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.frament_chat, container, false);
+
+        chatRecyclerView = view.findViewById(R.id.chat_RecylerView);
+        textMsg = view.findViewById(R.id.text_Msg);
+        btnSent = view.findViewById(R.id.btn_Sent);
+        btnAddImage = view.findViewById(R.id.btn_AddImage);
+        imagePreview = view.findViewById(R.id.image_preview);
+
+        repository = new RoomRepository();
+
+        messages = new ArrayList<>();
+
+        loadMessage();
+
+        imagePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
+                        selectedImageUri = result.getData().getData();
+                        if (selectedImageUri != null) {
+                            imagePreview.setImageURI(selectedImageUri);
+                            imagePreview.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+        );
+
+        btnAddImage.setOnClickListener(v -> {
+            openImagePicker();
+        });
+
+        btnSent.setOnClickListener(v -> {
+            if(textMsg.getText().toString() != "" || selectedImageUri != null){
+                sendMessage();
+            }
+        });
+
+        imagePreview.setOnClickListener(v -> {
+            selectedImageUri = null;
+            imagePreview.setVisibility(View.GONE);
+        });
+
+        chatRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        return view;
+    }
+
+    private void loadMessage() {
+        repository.findChatRoom(chatRoom.getUsers().get(0), chatRoom.getUsers().get(1), (chatRoom) -> {
+            this.chatRoom = chatRoom;
+            if(chatRoom.getMessages() != null)
+                messages.addAll(chatRoom.getMessages());
+            adapter = new ChatAdapter(messages, getContext());
+            chatRecyclerView.setAdapter(adapter);
+            updateMesage(chatRoom.getId());
+        }, (e) -> {});
+    }
+
+    private void updateMesage(String roomId){
+        repository.listenToMessages(roomId, (newMessages) -> {
+            if(!messages.isEmpty()){
+                if(!newMessages.equals(this.messages)){
+                    this.messages.clear();
+                    this.messages.addAll(newMessages);
+                    adapter.notifyDataSetChanged();
+                }
+
+            }
+            }, (e) -> {});
+    }
+
+    private void sendMessage() {
+        String msg = textMsg.getText().toString();
+        btnSent.setEnabled(false);
+        repository.sendMessage(getContext(), chatRoom.getId(), msg, selectedImageUri, (message) -> {
+            textMsg.setText("");
+            selectedImageUri = null;
+            imagePreview.setVisibility(View.GONE);
+//            messages.add(message);
+//            adapter.notifyDataSetChanged();
+            btnSent.setEnabled(true);
+            }, (e) -> {btnSent.setEnabled(true);});
+    }
+
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        imagePickerLauncher.launch(intent);
+    }
+}
