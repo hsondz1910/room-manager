@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.R;
 
@@ -23,11 +24,18 @@ import java.util.List;
 public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAdapter.RoomViewHolder> {
     private List<Room> roomList;
     private Context context;
+    private FirebaseFirestore db;
 
     // Constructor
     public RoomManagementAdapter(List<Room> roomList, Context context) {
         this.roomList = roomList;
         this.context = context;
+    }
+
+    public RoomManagementAdapter(List<Room> roomList, Context context, FirebaseFirestore db) {
+        this.roomList = roomList;
+        this.context = context;
+        this.db = db;
     }
 
     @NonNull
@@ -92,8 +100,20 @@ public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAd
                 return true;
             } else if (id == R.id.action_delete) {
                 Toast.makeText(context, "Delete " + room.getTitle(), Toast.LENGTH_SHORT).show();
+
+                // Remove from list and notify adapter
                 roomList.remove(holder.getAdapterPosition());
                 notifyItemRemoved(holder.getAdapterPosition());
+
+                // Delete from Firestore
+                db.collection("rooms").document(room.getId())
+                        .delete()
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(context, "Room deleted from Firestore", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(context, "Error deleting room from Firestore", Toast.LENGTH_SHORT).show();
+                        });
                 return true;
             }
             return false;

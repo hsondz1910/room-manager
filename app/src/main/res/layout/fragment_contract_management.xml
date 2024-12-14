@@ -1,25 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="Quản lý phòng"
+        android:title="@string/contract_management"
         android:background="?attr/colorPrimary"/>
 
     <Button
-        android:id="@+id/btnPostRoom"
+        android:id="@+id/btnPostContract"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:backgroundTint="?attr/colorPrimary"
-        android:padding="16dp"
-        android:text="@string/create_post"
-        android:textColor="@android:color/white" />
+        android:layout_marginBottom="16dp"
+        android:text="@string/add_contract" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -27,4 +26,11 @@
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
+    <TextView
+        android:id="@+id/tvStatusMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/status_messages"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="16dp"/>
 </LinearLayout>

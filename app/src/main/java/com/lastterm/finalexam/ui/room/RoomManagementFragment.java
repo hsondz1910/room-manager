@@ -48,6 +48,9 @@ public class RoomManagementFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_room_management, container, false);
         setHasOptionsMenu(true);
 
+        // Initialize FirebaseFirestore
+        db = FirebaseFirestore.getInstance(); // Khởi tạo db ở đây
+
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -146,56 +149,96 @@ public class RoomManagementFragment extends Fragment {
     }
 
     private void deleteSelectedRooms() {
-        // Sử dụng requireContext() thay cho 'this' để lấy context
         AlertDialog.Builder builder2 = new AlertDialog.Builder(requireContext());
-        builder2.setTitle("Are you want to delete all of rooms which you selected?");
-        builder2.setMessage("You'll lose all your rooms which you selected");
-        builder2.setPositiveButton("SURE",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int which) {
-                        List<Room> selectedItems = new ArrayList<>();
-                        for (Room room2 : roomList) {
-                            if (!room2.isSelected()) {
-                                selectedItems.add(room2);
-                            }
-                        }
-                        roomList.clear();
-                        roomList.addAll(selectedItems);
-                        roomManagementAdapter.notifyDataSetChanged();
+        builder2.setTitle("Do you want to delete all selected rooms?");
+        builder2.setMessage("You will lose all the selected rooms.");
+
+        builder2.setPositiveButton("SURE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                List<Room> selectedItems = new ArrayList<>();
+                List<String> roomIdsToDelete = new ArrayList<>();
+
+                // Gather the room IDs of the selected rooms
+                for (Room room : roomList) {
+                    if (room.isSelected()) {
+                        roomIdsToDelete.add(room.getId());
+                    } else {
+                        selectedItems.add(room);
                     }
-                });
-        builder2.setNegativeButton("CANCEL",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int which) {
-                        // don't do anything
-                    }
-                });
+                }
+
+                // Remove selected items from the list
+                roomList.clear();
+                roomList.addAll(selectedItems);
+
+                // Notify the adapter of the changes
+                roomManagementAdapter.notifyDataSetChanged();
+
+                // Delete rooms from Firestore
+                for (String roomId : roomIdsToDelete) {
+                    db.collection("rooms").document(roomId)
+                            .delete()
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(getContext(), "Room deleted from Firestore", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getContext(), "Error deleting room from Firestore", Toast.LENGTH_SHORT).show();
+                            });
+                }
+            }
+        });
+
+        builder2.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                // Don't do anything if user cancels
+            }
+        });
+
         AlertDialog dialog2 = builder2.create();
         dialog2.show();
     }
 
-
     private void deleteAllRooms() {
         AlertDialog.Builder builder3 = new AlertDialog.Builder(requireContext());
-        builder3.setTitle("Are you want to delete all of data?");
-        builder3.setMessage("You'll lost all your data");
-        builder3.setPositiveButton("SURE",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        roomList.clear();
-                        roomManagementAdapter.notifyDataSetChanged();
-                    }
-                });
-        builder3.setNegativeButton("CANCEL",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // don't do anything
-                    }
-                });
+        builder3.setTitle("Do you want to delete all rooms?");
+        builder3.setMessage("You will lose all the data.");
+
+        builder3.setPositiveButton("SURE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Gather all room IDs to delete
+                List<String> roomIdsToDelete = new ArrayList<>();
+                for (Room room : roomList) {
+                    roomIdsToDelete.add(room.getId());
+                }
+
+                // Clear the local room list
+                roomList.clear();
+                roomManagementAdapter.notifyDataSetChanged();
+
+                // Delete rooms from Firestore
+                for (String roomId : roomIdsToDelete) {
+                    db.collection("rooms").document(roomId)
+                            .delete()
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(getContext(), "All rooms deleted from Firestore", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getContext(), "Error deleting rooms from Firestore", Toast.LENGTH_SHORT).show();
+                            });
+                }
+            }
+        });
+
+        builder3.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Don't do anything if user cancels
+            }
+        });
+
         AlertDialog dialog3 = builder3.create();
         dialog3.show();
     }

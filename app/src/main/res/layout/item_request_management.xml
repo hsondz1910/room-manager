@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="8dp">
 
+    <!-- Image of the room -->
+
+    <!-- Details section of the room -->
     <ImageView
-        android:id="@+id/roomImage"
+        android:id="@+id/roomImageManagement"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:layout_gravity="center"
         android:src="@drawable/placeholder_img" />
 
     <LinearLayout
@@ -18,6 +21,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Title and "Create Contract" button -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -25,52 +29,53 @@
 
             <TextView
                 android:id="@+id/roomTitle"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="clip_vertical"
-                android:text="@string/room_title"
+                android:text="Room Title"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/detailButton"
+                android:id="@+id/createContractButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:text="@string/see_details"
-                android:textSize="14sp"
-                app:iconSize="9dp" />
+                android:backgroundTint="#4CAF50"
+                android:text="Tạo hợp đồng" />
         </LinearLayout>
 
+        <!-- Deposit Amount of the user -->
         <TextView
-            android:id="@+id/roomPrice"
+            android:id="@+id/depositAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="clip_vertical"
-            android:text="@string/price"
+            android:text="Deposit Amount"
             android:textColor="@android:color/holo_blue_light"
             android:textSize="16sp" />
 
+        <!-- User's name and "Reject" button -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/roomAddress"
-                android:layout_width="0dp"
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="@string/address"
+                android:text="User Name"
                 android:textSize="14sp" />
 
-            <ImageView
-                android:id="@+id/heartIcon"
-                android:layout_width="42dp"
-                android:layout_height="26dp"
-                android:src="@drawable/ic_heart_empty" />
+            <Button
+                android:id="@+id/rejectButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#E91E63"
+                android:text="Từ chối" />
         </LinearLayout>
 
     </LinearLayout>

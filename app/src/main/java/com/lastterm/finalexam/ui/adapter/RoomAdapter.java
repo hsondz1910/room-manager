@@ -22,7 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
-import com.lastterm.finalexam.ui.room.RoomDetailActivity;
+import com.lastterm.finalexam.ui.room.RoomDetailFragment;
 
 import java.util.List;
 
@@ -72,13 +72,13 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         });
 
         holder.itemView.setOnClickListener(view -> {
-            Fragment fragment = new RoomDetailActivity(room);
+            Fragment fragment = new RoomDetailFragment(room);
             AppCompatActivity activity = (AppCompatActivity) view.getContext();
             activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
         });
 
         holder.detailButton.setOnClickListener(view -> {
-            Fragment fragment = new RoomDetailActivity(room);
+            Fragment fragment = new RoomDetailFragment(room);
 
             // Unwrap ContextWrapper to get the Activity
             Activity activity = unwrap(view.getContext());

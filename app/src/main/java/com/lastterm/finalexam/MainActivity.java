@@ -14,11 +14,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.lastterm.finalexam.ui.contract.ContractManagementFragment;
 import com.lastterm.finalexam.ui.fragments.home.AdminHomeFragment;
 import com.lastterm.finalexam.ui.fragments.home.OwnerHomeFragment;
 import com.lastterm.finalexam.ui.fragments.home.TenantHomeFragment;
 import com.lastterm.finalexam.ui.fragments.favorites.FavoritesFragment;
 import com.lastterm.finalexam.ui.fragments.SettingFragment;
+import com.lastterm.finalexam.ui.request.RequestManagementFragment;
 import com.lastterm.finalexam.ui.room.RoomManagementFragment;
 import com.lastterm.finalexam.ui.fragments.search.SearchFragment;
 
@@ -113,8 +115,11 @@ public class MainActivity extends AppCompatActivity {
                 // Fragment cho Owner
                 if (item.getItemId() == R.id.nav_room_management) {
                     selectedFragment = new RoomManagementFragment();
-                }
-                else if (item.getItemId() == R.id.nav_setting) {
+                } else if (item.getItemId() == R.id.nav_contract_management) {
+                    selectedFragment = new ContractManagementFragment();
+                } else if (item.getItemId() == R.id.nav_request_management) {
+                    selectedFragment = new RequestManagementFragment();
+                } else if (item.getItemId() == R.id.nav_setting) {
                     selectedFragment = new SettingFragment();
                 }
 
