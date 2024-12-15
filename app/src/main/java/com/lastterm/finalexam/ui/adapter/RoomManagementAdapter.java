@@ -27,14 +27,11 @@ public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAd
     private Context context;
     private FirebaseFirestore db;
 
-    // Constructor
     public RoomManagementAdapter(List<Room> roomList, Context context) {
         this.roomList = roomList;
         this.context = context;
         db = FirebaseFirestore.getInstance();
     }
-
-
 
     @NonNull
     @Override
@@ -84,7 +81,7 @@ public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAd
 
         // Update "Select" menu item title based on room selection state
         MenuItem selectItem = popupMenu.getMenu().findItem(R.id.action_select);
-        selectItem.setTitle(room.isSelected() ? "Unselect" : "Select");
+        selectItem.setTitle(room.isSelected() ? "Bỏ lựa chọn" : "Lựa chọn");
 
         // Handle menu item clicks
         popupMenu.setOnMenuItemClickListener(menuItem -> {
@@ -92,13 +89,13 @@ public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAd
             if (id == R.id.action_select) {
                 room.setSelected(!room.isSelected());
                 holder.itemCheckbox.setChecked(room.isSelected());
-                selectItem.setTitle(room.isSelected() ? "Unselect" : "Select");
+                selectItem.setTitle(room.isSelected() ? "Bỏ lựa chọn" : "Lựa chọn");
                 return true;
             } else if (id == R.id.action_edit) {
-                Toast.makeText(context, "Edit " + room.getTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Chỉnh sửa " + room.getTitle(), Toast.LENGTH_SHORT).show();
                 return true;
             } else if (id == R.id.action_delete) {
-                Toast.makeText(context, "Delete " + room.getTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Xoá bỏ " + room.getTitle(), Toast.LENGTH_SHORT).show();
 
                 // Remove from list and notify adapter
                 roomList.remove(holder.getAdapterPosition());
@@ -108,10 +105,10 @@ public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAd
                 db.collection("rooms").document(room.getId())
                         .delete()
                         .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(context, "Room deleted from Firestore", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Phòng đã bị xóa khỏi Firestore", Toast.LENGTH_SHORT).show();
                         })
                         .addOnFailureListener(e -> {
-                            Toast.makeText(context, "Error deleting room from Firestore", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Lỗi khi xóa phòng khỏi Firestore", Toast.LENGTH_SHORT).show();
                         });
                 return true;
             }

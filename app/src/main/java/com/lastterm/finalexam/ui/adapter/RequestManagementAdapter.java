@@ -62,7 +62,7 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
                     }
                 })
                 .addOnFailureListener(e -> {
-                    holder.userName.setText("Tên phòng: Không có sẵn");
+                    holder.roomTitle.setText("Tên phòng: Không có sẵn");
                 });
 
         holder.depositAmount.setText("Số tiền gửi: " + request.getDepositAmount() + "VNĐ");

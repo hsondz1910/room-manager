@@ -16,29 +16,6 @@ public class Contract {
 
     public Contract() {}
 
-    public Contract(String contractId, String tenantId, String ownerId, String roomId, Date startDate, Date endDate, double rentAmount, boolean isActive, String contractTerms) {
-        this.contractId = contractId;
-        this.tenantId = tenantId;
-        this.ownerId = ownerId;
-        this.roomId = roomId;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.rentAmount = rentAmount;
-        this.isActive = isActive;
-        this.contractTerms = contractTerms;
-    }
-
-    public Contract(String tenantId, String ownerId, String roomId, Date startDate, Date endDate, double rentAmount, boolean isActive, String contractTerms) {
-        this.tenantId = tenantId;
-        this.ownerId = ownerId;
-        this.roomId = roomId;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.rentAmount = rentAmount;
-        this.isActive = isActive;
-        this.contractTerms = contractTerms;
-    }
-
     public String getContractId() {
         return contractId;
     }

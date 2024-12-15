@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/check_all"
-        android:title="@string/check_all" />
+        android:id="@+id/action_select"
+        android:title="Lựa chọn" />
     <item
-        android:id="@+id/delete_selected"
-        android:title="@string/delete_selected" />
+        android:id="@+id/action_edit"
+        android:title="Chỉnh sửa" />
     <item
-        android:id="@+id/delete_all"
-        android:title="@string/delete_all" />
+        android:id="@+id/action_delete"
+        android:title="Xóa bỏ" />
 </menu>

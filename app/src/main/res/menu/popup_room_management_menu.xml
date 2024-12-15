@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_select"
-        android:title="Select" />
+        android:title="Lựa chọn" />
     <item
         android:id="@+id/action_edit"
-        android:title="Edit" />
+        android:title="Chỉnh sửa" />
     <item
         android:id="@+id/action_delete"
-        android:title="Delete" />
+        android:title="Xóa bỏ" />
 </menu>
