@@ -90,7 +90,7 @@ public class RequestManagementFragment extends Fragment {
                 requestAdapter.updateData(filteredRequests);
 
                 // Update status message
-                tvStatusMessage.setText("You have " + filteredRequests.size() + " requests waiting to be processed.");
+                tvStatusMessage.setText("Bạn có " + filteredRequests.size() + " yêu cầu đang chờ xử lý.");
             }
 
             @Override

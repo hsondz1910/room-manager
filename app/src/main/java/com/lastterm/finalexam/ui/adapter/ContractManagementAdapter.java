@@ -72,8 +72,8 @@ public class ContractManagementAdapter extends RecyclerView.Adapter<ContractMana
 
         // Bind contract data
         holder.tvContractTitle.setText(contract.getContractId()); // Contract ID or title
-        holder.tvTenantName.setText("Tenant: " + contract.getTenantId()); // Tenant Name
-        holder.tvRentAmount.setText("Rent: $" + contract.getRentAmount()); // Rent amount
+        holder.tvTenantName.setText("Người thuê nhà: " + contract.getTenantId()); // Tenant Name
+        holder.tvRentAmount.setText("Tiền thuê: " + contract.getRentAmount() + "VNĐ"); // Rent amount
         holder.tvContractStatus.setText(contract.isActive() ? "Active" : "Expired"); // Contract Status
 
         // Set CheckBox state
