@@ -113,18 +113,24 @@ public class ChatRoomFragment extends Fragment {
                 messages.addAll(chatRoom.getMessages());
             adapter = new ChatAdapter(messages, getContext());
             chatRecyclerView.setAdapter(adapter);
+            Log.d("TAG", "loadMessage===: " + chatRoom.getUsers().get(0).equals(repository.getCurrentUser()));
+            if(chatRoom.getUsers().get(0).equals(repository.getCurrentUser()))
+                repository.setMessagesRead(chatRoom.getId(),chatRoom.getUsers().get(1) ,(d) -> {}, (e) -> {});
+            else
+                repository.setMessagesRead(chatRoom.getId(),chatRoom.getUsers().get(0) ,(d) -> {}, (e) -> {});
             updateMesage(chatRoom.getId());
         }, (e) -> {});
     }
 
     private void updateMesage(String roomId){
         repository.listenToMessages(roomId, (newMessages) -> {
+            if(newMessages != null)
                 if(!newMessages.isEmpty()){
                     this.messages.clear();
                     this.messages.addAll(newMessages);
                     adapter.notifyDataSetChanged();
                 }
-            }, (e) -> {});
+        }, (e) -> {});
     }
 
     private void sendMessage() {
@@ -135,7 +141,7 @@ public class ChatRoomFragment extends Fragment {
             selectedImageUri = null;
             imagePreview.setVisibility(View.GONE);
             btnSent.setEnabled(true);
-            }, (e) -> {btnSent.setEnabled(true);});
+        }, (e) -> {btnSent.setEnabled(true);});
     }
 
     private void openImagePicker() {

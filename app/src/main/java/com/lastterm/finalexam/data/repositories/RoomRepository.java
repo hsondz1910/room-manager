@@ -385,6 +385,17 @@ public class RoomRepository {
             Log.d("getAllRoomSupport", "getAllChatRoomSupport: " + e.getMessage());
         }
     }
+    public void isContainRoom(String roomID, OnSuccessListener<Boolean> onSuccess, OnFailureListener onFailure){
+        try {
+            db.collection("chatRooms").whereEqualTo("roomId", roomID).get().addOnCompleteListener(snapshot -> {
+                if (snapshot.isSuccessful()) {
+                    onSuccess.onSuccess(snapshot.getResult().size() > 0);
+                }
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public void getAllChatRoomOfUser(String userID, OnSuccessListener<List<ChatRoom>> onSuccess, OnFailureListener onFailure) {
         try {
@@ -406,7 +417,7 @@ public class RoomRepository {
 
     public void sendMessage(Context context,String roomId, String msg, Uri img, OnSuccessListener<MessageClass> onSuccess, OnFailureListener onFailure) {
         try {
-            MessageClass message = new MessageClass(msg, auth.getUid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "");
+            MessageClass message = new MessageClass(msg, auth.getUid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "", false);
             if (img != null) {
                 uploadImageImgBBForChat(context,roomId, img, (url) -> {
                     message.setImg(url);
@@ -431,6 +442,28 @@ public class RoomRepository {
         }
     }
 
+    public void setMessagesRead(String roomId, String senderID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        Log.d("TAG", "setMessagesRead: " + senderID);
+        db.collection("chatRooms")
+                .document(roomId)
+                .collection("messages")
+                .whereEqualTo("senderID", senderID)
+                .get()
+                .addOnCompleteListener(querySnapshot -> {
+                    Log.d("TAG", "setMessagesRead: " + querySnapshot.getResult().isEmpty());
+                    if (!querySnapshot.getResult().isEmpty()) {
+                        for (DocumentSnapshot document : querySnapshot.getResult()) {
+                            document.getReference().update("read", true)
+                                    .addOnCompleteListener((c) -> {Log.d("TAG", "setMessagesRead: " + c.getResult());});
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error getting documents", e);
+                });
+
+    }
+
     public void listenToMessages(String roomId, OnSuccessListener<List<MessageClass>> onSuccess, OnFailureListener onFailure) {
         db.collection("chatRooms")
                 .document(roomId)
@@ -452,9 +485,14 @@ public class RoomRepository {
                             for (QueryDocumentSnapshot doc : querySnapshot) {
                                 MessageClass message = doc.toObject(MessageClass.class);
                                 if (message != null) {
+//                                    Boolean isRead = doc.get("read", Boolean.class);
+//                                    message.setIsRead(isRead.booleanValue());
+                                    Log.d("TAG", "listenToMessages: " + message.isRead());
                                     message.setId(doc.getId());
                                     messageList.add(message);
                                 }
+
+
                             }
                             // If messages are found, pass them to the success listener
                             onSuccess.onSuccess(messageList);

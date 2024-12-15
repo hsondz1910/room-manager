@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.ChatRoom;
+import com.lastterm.finalexam.data.entities.MessageClass;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
 import com.lastterm.finalexam.ui.fragments.contact.ChatRoomFragment;
 import com.lastterm.finalexam.ui.room.RoomDetailFragment;
@@ -91,23 +92,32 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
             }
         });
         holder.itemView.setOnClickListener(v -> {
-            Fragment fragment = new ChatRoomFragment(chatRoom.getRoomId(),chatRoom.getUsers().get(0), chatRoom.getUsers().get(1));
-            AppCompatActivity activity = (AppCompatActivity) v.getContext();
-            activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+            repository.isContainRoom(chatRoom.getRoomId(), (isContain) -> {
+                if(isContain){
+                    Fragment fragment = new ChatRoomFragment(chatRoom.getRoomId(),chatRoom.getUsers().get(0), chatRoom.getUsers().get(1));
+                    AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+                }
+                else
+                    Toast.makeText(context, "Liện hệ không còn tồn tại", Toast.LENGTH_SHORT).show();
+            },(e) -> {});
         });
 
         holder.btn_img_Del.setOnLongClickListener(e -> {
             showDialog(position, chatRoom.getRoomId());
             return true;
         });
-        final int[] check = {0};
 
         repository.listenToMessages(chatRoom.getId(), (newMessages) -> {
-            if(!newMessages.isEmpty() && check[0] == 1){
-                chatRoom.setMessages(newMessages);
-                holder.text_room_name.setTextColor(ContextCompat.getColor(context, R.color.sender));
-            }
-            if(check[0] != 1) check[0]++;
+            if(newMessages != null)
+                for(MessageClass message : newMessages){
+                    if(!message.getsenderID().equals(repository.getCurrentUser())){
+                        Log.d("TAG", "message.isRead(): " + message.getId());
+                        Log.d("TAG", "message.isRead(): " + message.isRead());
+                        if(!message.isRead())
+                            holder.text_room_name.setTextColor(ContextCompat.getColor(context, R.color.sender));
+                    }
+                }
         }, (e) -> {});
 
     }
