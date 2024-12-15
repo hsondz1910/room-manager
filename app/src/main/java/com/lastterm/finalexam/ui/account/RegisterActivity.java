@@ -70,7 +70,7 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Registration successful, save user info to Firestore
                             String userId = mAuth.getCurrentUser().getUid();
-                            User user = new User(fullName, username, email, phone, role);
+                            User user = new User(fullName, username, email, phone, role,"");
 
                             db.collection("users").document(userId)
                                     .set(user)

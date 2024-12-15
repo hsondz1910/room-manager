@@ -6,11 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.lastterm.finalexam.MainActivity;
@@ -23,6 +26,7 @@ public class SettingFragment extends Fragment {
     private Button btnLogout, btnEditProfile;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private ImageView img;
 
     @Nullable
     @Override
@@ -38,6 +42,7 @@ public class SettingFragment extends Fragment {
         tvRole = view.findViewById(R.id.tvRole);
         btnLogout = view.findViewById(R.id.btnLogout);
         btnEditProfile = view.findViewById(R.id.btnEditProfile);
+        img = view.findViewById(R.id.profileImage);
 
         String userId = mAuth.getCurrentUser().getUid();
 
@@ -47,6 +52,13 @@ public class SettingFragment extends Fragment {
                 tvEmail.setText(documentSnapshot.getString("email"));
                 tvPhone.setText(documentSnapshot.getString("phone"));
                 tvRole.setText(documentSnapshot.getString("role"));
+                if(documentSnapshot.getString("urlAvatar") != null){
+                    try {
+                        Glide.with(this).load(documentSnapshot.getString("urlAvatar")).into(img);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
         }).addOnFailureListener(e ->
                 Toast.makeText(getActivity(), "Failed to load user data", Toast.LENGTH_SHORT).show()
