@@ -26,7 +26,8 @@ import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.data.entities.uComment;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
 
-import com.lastterm.finalexam.ui.chat.ChatRoomFragment;
+
+import com.lastterm.finalexam.ui.fragments.contact.ChatRoomFragment;
 import com.lastterm.finalexam.ui.adapter.CommentApdapter;
 import com.lastterm.finalexam.ui.adapter.ImageSliderAdapter;
 
@@ -173,7 +174,7 @@ public class RoomDetailFragment extends Fragment {
         contactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment defaultFragment = new ChatRoomFragment(repository.getCurrentUser(), room.getOwnerId());
+                Fragment defaultFragment = new ChatRoomFragment(room.getId(),repository.getCurrentUser(), room.getOwnerId());
                 if (defaultFragment != null) {
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                     transaction.replace(R.id.fragment_container, defaultFragment);

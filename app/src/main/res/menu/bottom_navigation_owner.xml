@@ -14,6 +14,10 @@
         android:id="@+id/nav_request_management"
         android:icon="@drawable/ic_menu_request_management"
         android:title="@string/request_management"/>
+        <item
+        android:id="@+id/nav_contact"
+        android:icon="@drawable/outline_message_24"
+        android:title="@string/contact" />
 
     <item
         android:id="@+id/nav_setting"

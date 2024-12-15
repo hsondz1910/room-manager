@@ -282,8 +282,8 @@ public class RoomRepository {
         return auth.getUid();
     }
 
-    public void creatChatRoom(String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure) {
-        ChatRoom chatRoom = new ChatRoom(userIDSent, userIDReceiver);
+    public void creatChatRoom(String roomID,String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure) {
+        ChatRoom chatRoom = new ChatRoom(roomID, userIDSent, userIDReceiver);
         try {
             db.collection("chatRooms").add(chatRoom).addOnSuccessListener(documentReference -> {
                 chatRoom.setId(documentReference.getId());
@@ -308,12 +308,13 @@ public class RoomRepository {
 
     }
 
-    public void findChatRoom(String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure) {
+    public void findChatRoom(String roomID,String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure) {
         db.collection("chatRooms")
-                .whereArrayContainsAny("users", Arrays.asList(userIDSent, userIDReceiver))
+                .whereEqualTo("roomId", roomID)
                 .get()
                 .addOnCompleteListener(snapshot -> {
                     if(snapshot.isSuccessful()) {
+                        Log.d("TAG", "findChatRoom: " + snapshot.getResult().size()+ "--"+ roomID);
                         if (!snapshot.getResult().isEmpty()) {
                             QuerySnapshot doc = snapshot.getResult();
                             ChatRoom chatRoom = doc.getDocuments().get(0).toObject(ChatRoom.class);
@@ -337,7 +338,7 @@ public class RoomRepository {
                                     });
 
                         } else {
-                            creatChatRoom(userIDSent, userIDReceiver, (chatRoom) -> {
+                            creatChatRoom(roomID,userIDSent, userIDReceiver, (chatRoom) -> {
                                 onSuccess.onSuccess(chatRoom);
                             }, (e) -> {
                                 onFailure.onFailure(e);
@@ -445,7 +446,7 @@ public class RoomRepository {
                             onSuccess.onSuccess(messageList);
                         } else {
                             // In case there's no data, pass an empty list or handle as needed
-                            onSuccess.onSuccess(new ArrayList<>());
+                            onSuccess.onSuccess(null);
                         }
                     }
 
