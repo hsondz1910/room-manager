@@ -6,6 +6,11 @@
         android:title="@string/room_management"/>
 
     <item
+        android:id="@+id/nav_contact"
+        android:icon="@drawable/outline_message_24"
+        android:title="@string/contact" />
+
+    <item
         android:id="@+id/nav_setting"
         android:icon="@drawable/ic_menu_settings"
         android:title="@string/settings" />

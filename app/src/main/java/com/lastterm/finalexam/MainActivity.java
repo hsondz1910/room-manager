@@ -14,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.lastterm.finalexam.ui.fragments.contact.ContactFrament;
 import com.lastterm.finalexam.ui.fragments.home.AdminHomeFragment;
 import com.lastterm.finalexam.ui.fragments.home.OwnerHomeFragment;
 import com.lastterm.finalexam.ui.fragments.home.TenantHomeFragment;
@@ -104,17 +105,20 @@ public class MainActivity extends AppCompatActivity {
                 // Fragment for Tenant
                 if (item.getItemId() == R.id.nav_search) {
                     selectedFragment = new SearchFragment();
-                } else if (item.getItemId() == R.id.nav_favorites) {
+                }else if (item.getItemId() == R.id.nav_favorites) {
                     selectedFragment = new FavoritesFragment();
-                } else if (item.getItemId() == R.id.nav_setting) {
+                }else if (item.getItemId() == R.id.nav_contact) {
+                    selectedFragment = new ContactFrament("tenant");
+                }else if (item.getItemId() == R.id.nav_setting) {
                     selectedFragment = new SettingFragment();
                 }
             } else if ("owner".equals(userRole)) {
                 // Fragment cho Owner
                 if (item.getItemId() == R.id.nav_room_management) {
                     selectedFragment = new RoomManagementFragment();
-                }
-                else if (item.getItemId() == R.id.nav_setting) {
+                }else if (item.getItemId() == R.id.nav_contact) {
+                    selectedFragment = new ContactFrament("owner");
+                } else if (item.getItemId() == R.id.nav_setting) {
                     selectedFragment = new SettingFragment();
                 }
 
