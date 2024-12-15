@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -94,21 +95,53 @@ public class RoomRepository {
         Query query = db.collection("rooms");
 
         if (filter.getMaxPrice() > 0) {
+            Log.d("TAG", "searchRooms: " + filter.getMaxPrice());
             query = query.whereLessThanOrEqualTo("price", filter.getMaxPrice());
         }
 
-        if (filter.getMinArea() > 0) {
-            query = query.whereGreaterThanOrEqualTo("area", filter.getMinArea());
+        if (filter.getMinPrice() > 0) {
+            Log.d("TAG", "searchRoomsmin: " + filter.getMinPrice());
+            query = query.whereGreaterThanOrEqualTo("price", filter.getMinPrice());
         }
 
         query.get().addOnSuccessListener(querySnapshot -> {
             List<Room> rooms = new ArrayList<>();
+            Log.d("TAG", "searchRooms: " + querySnapshot.size());
             for (QueryDocumentSnapshot document : querySnapshot) {
                 Room room = document.toObject(Room.class);
+                if(filter.getArea() > 0){
+                    Log.d("TAG", "getArea: " );
+                    if(room.getArea() >= filter.getArea()){
+                        room.setId(document.getId());
+                        rooms.add(room);
+                    }
+                }
 
-                room.setId(document.getId());
-                rooms.add(room);
+                if(!filter.getSearch().isEmpty()){
+                    Log.d("TAG", "getSearch: " );
+                    if(!room.getTitle().toLowerCase().contains(filter.getSearch().toLowerCase())){
+                        if(!room.getDescription().toLowerCase().contains(filter.getSearch().toLowerCase())){
+                            continue;
+                        }
+                    }
+                    room.setId(document.getId());
+                    rooms.add(room);
+                }
+                if(!filter.getLocation().isEmpty()){
+                    Log.d("TAG", "getLocation: " );
+                    if(!room.getAddress().toLowerCase().contains(filter.getLocation().toLowerCase())){
+                        continue;
+                    }
+                    room.setId(document.getId());
+                    rooms.add(room);
+                }
+                if(filter.getArea() == 0 && filter.getSearch().isEmpty() && filter.getLocation().isEmpty()){
+                    room.setId(document.getId());
+                    rooms.add(room);
+                }
+
             }
+            rooms = new ArrayList<>(new HashSet<Room>(rooms));
             onSuccess.onSuccess(rooms);
         });
     }
