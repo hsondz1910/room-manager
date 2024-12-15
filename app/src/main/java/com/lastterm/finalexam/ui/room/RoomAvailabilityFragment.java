@@ -1,4 +1,4 @@
 package com.lastterm.finalexam.ui.room;
 
-public class RoomAvailabilityActivity {
+public class RoomAvailabilityFragment {
 }

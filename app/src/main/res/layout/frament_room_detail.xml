@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:weightSum="3">
+                android:weightSum="2">
 
                 <Button
                     android:id="@+id/button_book"
@@ -123,39 +123,39 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Good"
-                    android:hint="Good"
-                    android:textSize="16sp"
+                    android:background="@drawable/label_background"
+                    android:backgroundTint="#009688"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:background="@drawable/label_background"
-                    android:textColor="@color/default_text_color" />
+                    android:text="Tốt"
+                    android:textColor="@color/default_text_color"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/label_normal"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Normal"
-                    android:hint="Normal"
-                    android:textSize="16sp"
+                    android:background="@drawable/label_background"
+                    android:backgroundTint="#4CAF50"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:background="@drawable/label_background"
-                    android:textColor="@color/default_text_color" />
+                    android:text="Bình thường"
+                    android:textColor="@color/default_text_color"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/label_bad"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Bad"
-                    android:hint="Bad"
-                    android:textSize="16sp"
+                    android:background="@drawable/label_background"
+                    android:backgroundTint="#CDDC39"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:background="@drawable/label_background"
-                    android:textColor="@color/default_text_color" />
+                    android:text="Không tốt"
+                    android:textColor="@color/default_text_color"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 

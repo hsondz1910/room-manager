@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Điều khoản hợp đồng TextView -->
+    <TextView
+        android:id="@+id/contract_terms_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Điều khoản hợp đồng"
+        android:textSize="16sp"
+        android:textColor="@android:color/black" />
+
+    <!-- Số tiền cọc tối thiểu TextView -->
+    <TextView
+        android:id="@+id/deposit_amount_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Số tiền cọc tối thiểu"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"
+        android:textColor="@android:color/black" />
+
+    <!-- Nhập số tiền cọc EditText -->
+    <EditText
+        android:id="@+id/deposit_input_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Nhập số tiền cọc (VND)"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp" />
+</LinearLayout>

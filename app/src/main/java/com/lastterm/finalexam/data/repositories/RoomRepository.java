@@ -1,7 +1,5 @@
 package com.lastterm.finalexam.data.repositories;
 
-import static java.security.AccessController.getContext;
-
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;

@@ -20,6 +20,7 @@ import com.lastterm.finalexam.ui.fragments.home.OwnerHomeFragment;
 import com.lastterm.finalexam.ui.fragments.home.TenantHomeFragment;
 import com.lastterm.finalexam.ui.fragments.favorites.FavoritesFragment;
 import com.lastterm.finalexam.ui.fragments.SettingFragment;
+import com.lastterm.finalexam.ui.request.RequestManagementFragment;
 import com.lastterm.finalexam.ui.room.RoomManagementFragment;
 import com.lastterm.finalexam.ui.fragments.search.SearchFragment;
 

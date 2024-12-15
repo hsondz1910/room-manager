@@ -6,7 +6,7 @@
     <string name="edit_profile">Chỉnh sửa hồ sơ</string>
     <string name="my_favorites">Mục yêu thích của tôi</string>
     <string name="no_favorites">Chưa có mục yêu thích nào</string>
-    <string name="favorite_item_image">Favorite item image</string>
+    <string name="favorite_item_image">Ảnh yêu thích</string>
     <string name="search">Tìm kiếm</string>
     <string name="favorites">Mục yêu thích</string>
     <string name="contact">Liên hệ</string>>
@@ -20,8 +20,21 @@
     <string name="settings">Cài đặt</string>
     <string name="room_management">Quản lý phòng trọ</string>
     <string name="create_post">Đăng bài</string>
-    <string name="xem_chi_ti_t">Xem chi tiết</string>
+    <string name="see_details">Xem chi tiết</string>
     <string name="room_title">Room Title</string>
     <string name="price">Price</string>
     <string name="address">Address</string>
+    <string name="delete">Xoá</string>
+    <string name="add_contract">Thêm hợp đồng</string>
+    <string name="contract_management">Quản lý hợp đồng</string>
+    <string name="delete_contract">Xoá hợp đồng</string>
+    <string name="status_messages">Thông báo trạng thái sẽ xuất hiện ở đây.</string>
+    <string name="tenant_name">Tên người thuê nhà</string>
+    <string name="rent_amount">Số tiền thuê</string>
+    <string name="contract_status">Trạng thái hợp đồng</string>
+    <string name="contract_title">Tiêu đề hợp đồng</string>
+    <string name="check_all">Đánh dấu tất cả/Bỏ đánh dấu tất cả</string>
+    <string name="delete_selected">Xoá chỉ mục được chọn</string>
+    <string name="delete_all">Xóa tất cả</string>
+    <string name="request_management">Quản lý yêu cầu</string>
 </resources>
