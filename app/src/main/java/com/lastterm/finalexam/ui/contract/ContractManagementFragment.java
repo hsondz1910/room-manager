@@ -64,15 +64,6 @@ public class ContractManagementFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        // Button to add contract
-        btnPostContract = view.findViewById(R.id.btnPostContract);
-        btnPostContract.setOnClickListener(v -> {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new AddContractFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
-
         // Load contracts
         loadContracts();
 

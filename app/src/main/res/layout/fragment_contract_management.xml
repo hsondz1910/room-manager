@@ -2,8 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -11,14 +10,6 @@
         android:layout_height="wrap_content"
         android:title="@string/contract_management"
         android:background="?attr/colorPrimary"/>
-
-    <Button
-        android:id="@+id/btnPostContract"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/add_contract" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

@@ -13,19 +13,14 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.DepositRequest;
-import com.lastterm.finalexam.data.entities.Room;
 
 import java.util.List;
 
 public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManagementAdapter.RequestViewHolder> {
     private List<DepositRequest> depositRequestsList;
-    private Context context;
-    private FirebaseFirestore db;
 
     public RequestManagementAdapter(List<DepositRequest> depositRequestsList) {
         this.depositRequestsList = depositRequestsList;
-        this.context = context;
-        this.db = db;
     }
 
     @NonNull
@@ -37,36 +32,59 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
 
     @Override
     public void onBindViewHolder(@NonNull RequestViewHolder holder, int position) {
+        // Fetch userName from Firestore using userId
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         DepositRequest request = depositRequestsList.get(position);
 
         // Bind data to UI elements
-        holder.roomTitle.setText("Room " + request.getRoomId());
-        holder.depositAmount.setText("Deposit: $" + request.getDepositAmount());
-        holder.userName.setText("User: " + request.getUserId());
+        db.collection("rooms") // Assuming user data is in "rooms" collection
+                .document(request.getRoomId()) // Fetch document by roomId
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String roomTitle = documentSnapshot.getString("title");
+                        holder.roomTitle.setText("Tên trọ: " + (roomTitle != null ? roomTitle : "Không có"));
+                    } else {
+                        holder.roomTitle.setText("Tên trọ: Không có");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    holder.userName.setText("Tên trọ: Không có");
+                });
 
-        // Glide to load image into ImageView (using the room's image URL)
-        Glide.with(holder.roomImage.getContext())
-                .load(request.getRoomImageUrls())
-                .placeholder(R.drawable.placeholder_img)
-                .into(holder.roomImage);
+        db.collection("users") // Assuming user data is in "users" collection
+                .document(request.getUserId()) // Fetch document by userId
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String userName = documentSnapshot.getString("username");
+                        holder.userName.setText("Người dùng: " + (userName != null ? userName : "Không rõ"));
+                    } else {
+                        holder.userName.setText("Người dùng: Không xác định");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    holder.userName.setText("Người dùng: Không xác định");
+                });
 
         // Load room image using Glide
         if (request.getRoomImageUrls() != null && !request.getRoomImageUrls().isEmpty()) {
             String imageUrl = request.getRoomImageUrls().get(0);
-            Glide.with(context)
+            Glide.with(holder.roomImage.getContext())
                     .load(imageUrl)
                     .placeholder(R.drawable.placeholder_img)
                     .error(R.drawable.error_image)
                     .into(holder.roomImage);
+        } else {
+            holder.roomImage.setImageResource(R.drawable.placeholder_img);
         }
+    }
 
-        holder.createContractButton.setOnClickListener(v -> {
-            // Handle contract creation
-        });
-
-        holder.rejectButton.setOnClickListener(v -> {
-            // Handle rejection
-        });
+    public void updateData(List<DepositRequest> newRequests) {
+        this.depositRequestsList.clear();
+        this.depositRequestsList.addAll(newRequests);
+        notifyDataSetChanged();
     }
 
     @Override
