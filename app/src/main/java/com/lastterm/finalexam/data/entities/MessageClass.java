@@ -8,23 +8,27 @@ public class MessageClass {
     String senderID;
     String date;
     String img;
+    boolean isRead;
 
     public MessageClass() {
     }
 
-    public MessageClass(String message, String senderID, String date, String img) {
+    public MessageClass(String message, String senderID, String date, String img, boolean isRead) {
         this.message = message;
         this.senderID = senderID;
         this.date = date;
         this.img = img;
+        this.isRead = isRead;
     }
 
-    public MessageClass(String id, String message, String senderID, String date, String img) {
+    public MessageClass(String id, String message, String senderID, String date, String img, boolean isRead) {
         this.id = id;
         this.message = message;
         this.senderID = senderID;
         this.date = date;
         this.img = img;
+        this.isRead = isRead;
+
     }
 
     public String getId() {
@@ -65,5 +69,13 @@ public class MessageClass {
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
     }
 }
