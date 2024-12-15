@@ -67,6 +67,10 @@ public class ChatRoomFragment extends Fragment {
 
         textMsg.setHint("Nhập tin nhắn của bạn...");
 
+        repository.getRoomById(chatRoom.getRoomId(), (room)->{
+            if(room == null) btnSent.setEnabled(false);
+        });
+
         loadMessage();
 
         imagePickerLauncher = registerForActivityResult(
@@ -98,11 +102,11 @@ public class ChatRoomFragment extends Fragment {
         });
 
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         return view;
     }
 
     private void loadMessage() {
-        Log.d("TAG", "loadMessage: " + chatRoom.getRoomId());
         repository.findChatRoom(chatRoom.getRoomId(),chatRoom.getUsers().get(0), chatRoom.getUsers().get(1), (chatRoom) -> {
             this.chatRoom = chatRoom;
             if(chatRoom.getMessages() != null)
@@ -114,7 +118,6 @@ public class ChatRoomFragment extends Fragment {
     }
 
     private void updateMesage(String roomId){
-        Log.d("TAG", "updateMesage: " + roomId);
         repository.listenToMessages(roomId, (newMessages) -> {
                 if(!newMessages.isEmpty()){
                     this.messages.clear();

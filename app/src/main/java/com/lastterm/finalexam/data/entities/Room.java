@@ -18,7 +18,7 @@ public class Room {
 
     public Room() {}
 
-    public Room(String id, String title, String address, double price, double area, List<String> imgUrls, String description, Map<String, String> utilities, boolean isFavorite, boolean isSelected, String ownerId, String imageUrl) {
+    public Room(String id, String title, String address, double price, double area, List<String> imgUrls, String description, Map<String, String> utilities, boolean isFavorite, boolean isSelected, String ownerId) {
         this.id = id;
         this.title = title;
         this.address = address;

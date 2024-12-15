@@ -47,17 +47,22 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     @Override
     public void onBindViewHolder(@NonNull FavoritesAdapter.FavoritesViewHolder holder, int position) {
         Room room = favoriteRooms.get(position);
-        holder.text_favorite_title.setText(room.getTitle());
-        holder.text_favorite_description.setText(room.getDescription());
-        holder.itemView.setOnClickListener(view -> {showPopupMenu(view, position);});
-        Log.d("Error", " image :" + room.getImgUrls().isEmpty());
-        if(!room.getImgUrls().isEmpty()){
-            try {
-                Glide.with(context).load(room.getImgUrls().get(0)).into(holder.image_favorite);
-            } catch (Exception e) {
-                Log.d("Error", "Error loading image :" + e.getMessage());
+        if(room.getTitle() != null && room.getAddress() != null) {
+            holder.text_favorite_title.setText(room.getTitle());
+            holder.text_favorite_description.setText(room.getDescription());
+            holder.itemView.setOnClickListener(view -> {showPopupMenu(view, position);});
+            if(!room.getImgUrls().isEmpty()){
+                try {
+                    Glide.with(context).load(room.getImgUrls().get(0)).into(holder.image_favorite);
+                } catch (Exception e) {
+                    Log.d("Error", "Error loading image :" + e.getMessage());
+                }
             }
-
+        }
+        else {
+            holder.text_favorite_title.setText("Phòng không tồn tại");
+            holder.text_favorite_description.setText("Phòng không tồn tại");
+            holder.itemView.setOnClickListener(view -> {showPopupMenu(view, position);});
         }
 
 
@@ -90,19 +95,26 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
                 Toast.makeText(context, "Đã xóa phòng " + favoriteRooms.get(position).getTitle() + "khỏi mục yêu thích", Toast.LENGTH_SHORT).show();
                 return true;
             }
-            if (item.getItemId() == R.id.action_detail) {
-                Fragment fragment = new RoomDetailFragment(favoriteRooms.get(position));
-                AppCompatActivity activity = (AppCompatActivity) view.getContext();
-                activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+            if(favoriteRooms.get(position).getTitle() != null && favoriteRooms.get(position).getAddress() != null){
+                if (item.getItemId() == R.id.action_detail) {
+                    Fragment fragment = new RoomDetailFragment(favoriteRooms.get(position));
+                    AppCompatActivity activity = (AppCompatActivity) view.getContext();
+                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+                }
             }
+
             return false;
         });
 
         popupMenu.show();
     }
     private void showDialog(int position) {
-        String roomTile = favoriteRooms.get(position).getTitle();
         String roomId = favoriteRooms.get(position).getId();
+        String roomTile = roomId;
+        if(favoriteRooms.get(position).getTitle() != null) {
+            roomTile = favoriteRooms.get(position).getTitle();
+        }
+
         new AlertDialog.Builder(context)
                 .setTitle("Confirm Deletion")
                 .setMessage("Bạn có muốn xóa phòng " + roomTile + " ra khởi mục yêu thích không?")

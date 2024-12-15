@@ -91,6 +91,7 @@ public class RoomManagementFragment extends Fragment {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Room room = document.toObject(Room.class);
                             room.setId(document.getId());
+                            Log.d("RoomManagement", "document.getId(): " + room.getId());
 
                             // Thêm log để kiểm tra URL
                             List<String> imageUrls = room.getImgUrls();

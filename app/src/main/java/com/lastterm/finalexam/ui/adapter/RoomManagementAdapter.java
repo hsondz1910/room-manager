@@ -1,6 +1,7 @@
 package com.lastterm.finalexam.ui.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,13 +31,10 @@ public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAd
     public RoomManagementAdapter(List<Room> roomList, Context context) {
         this.roomList = roomList;
         this.context = context;
+        db = FirebaseFirestore.getInstance();
     }
 
-    public RoomManagementAdapter(List<Room> roomList, Context context, FirebaseFirestore db) {
-        this.roomList = roomList;
-        this.context = context;
-        this.db = db;
-    }
+
 
     @NonNull
     @Override
@@ -48,6 +46,7 @@ public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAd
     @Override
     public void onBindViewHolder(@NonNull RoomViewHolder holder, int position) {
         Room room = roomList.get(position);
+        Log.d("RoomManagement", "Room------: " + room.getId());
 
         // Bind room data to views
         holder.roomTitle.setText(room.getTitle());
@@ -104,7 +103,7 @@ public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAd
                 // Remove from list and notify adapter
                 roomList.remove(holder.getAdapterPosition());
                 notifyItemRemoved(holder.getAdapterPosition());
-
+                Log.d("RoomManagement", "Room ID to delete: " + room.getId());
                 // Delete from Firestore
                 db.collection("rooms").document(room.getId())
                         .delete()
