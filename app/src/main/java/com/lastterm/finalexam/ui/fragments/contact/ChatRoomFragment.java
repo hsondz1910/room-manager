@@ -10,11 +10,15 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +39,8 @@ public class ChatRoomFragment extends Fragment {
     private ChatRoom chatRoom;
     private ChatAdapter adapter;
     private ImageView imagePreview;
+    private Toolbar toolbar;
+    private TextView toolbarTitle;
 
     private EditText textMsg;
     private ImageButton btnSent, btnAddImage;
@@ -50,10 +56,32 @@ public class ChatRoomFragment extends Fragment {
         chatRoom = new ChatRoom(roomID, sender, receiver);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        toolbar = view.findViewById(R.id.toolBarChat);
+        toolbarTitle = view.findViewById(R.id.toolbar_title);
+        AppCompatActivity activity = (AppCompatActivity) requireActivity();
+        activity.setSupportActionBar(toolbar);
+        if(chatRoom.getUsers().get(0).equals(repository.getCurrentUser())){
+            repository.getNameByUserID(chatRoom.getUsers().get(1), (name) -> {toolbarTitle.setText(name);});
+
+        }else {
+            repository.getNameByUserID(chatRoom.getUsers().get(0), (name) -> {toolbarTitle.setText(name);});
+        }
+
+        if (activity.getSupportActionBar() != null) {
+            activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
+            toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frament_chat, container, false);
+        // Đặt Toolbar làm Action Bar
+
 
         chatRecyclerView = view.findViewById(R.id.chat_RecylerView);
         textMsg = view.findViewById(R.id.text_Msg);
@@ -61,11 +89,17 @@ public class ChatRoomFragment extends Fragment {
         btnAddImage = view.findViewById(R.id.btn_AddImage);
         imagePreview = view.findViewById(R.id.image_preview);
 
+
         repository = new RoomRepository();
 
         messages = new ArrayList<>();
 
+
+
         textMsg.setHint("Nhập tin nhắn của bạn...");
+
+
+
 
         repository.getRoomById(chatRoom.getRoomId(), (room)->{
             if(room == null) btnSent.setEnabled(false);
