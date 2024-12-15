@@ -100,7 +100,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         if(!room.getImgUrls().isEmpty()){
             try {
                 Glide.with(context).load(room.getImgUrls().get(0)).into(holder.roomImg);
-                Log.d("Error", "Error loading image :" + Glide.with(context).load(room.getImgUrls().get(0)));
             } catch (Exception e) {
                 Log.d("Error", "Error loading image :" + e.getMessage());
             }

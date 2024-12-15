@@ -6,14 +6,9 @@
         android:title="@string/room_management"/>
 
     <item
-        android:id="@+id/nav_contract_management"
-        android:icon="@drawable/ic_menu_contract_management"
-        android:title="@string/contract_management"/>
-
-    <item
-        android:id="@+id/nav_request_management"
-        android:icon="@drawable/ic_menu_request_management"
-        android:title="@string/request_management"/>
+        android:id="@+id/nav_contact"
+        android:icon="@drawable/outline_message_24"
+        android:title="@string/contact" />
 
     <item
         android:id="@+id/nav_setting"

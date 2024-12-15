@@ -1,4 +1,4 @@
-package com.lastterm.finalexam.ui.chat;
+package com.lastterm.finalexam.ui.fragments.contact;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -28,7 +28,6 @@ import com.lastterm.finalexam.data.repositories.RoomRepository;
 import com.lastterm.finalexam.ui.adapter.ChatAdapter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class ChatRoomFragment extends Fragment {
@@ -47,8 +46,8 @@ public class ChatRoomFragment extends Fragment {
 
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
-    public ChatRoomFragment(String sender, String receiver) {
-        chatRoom = new ChatRoom(sender, receiver);
+    public ChatRoomFragment(String roomID, String sender, String receiver) {
+        chatRoom = new ChatRoom(roomID, sender, receiver);
     }
 
     @Nullable
@@ -65,6 +64,12 @@ public class ChatRoomFragment extends Fragment {
         repository = new RoomRepository();
 
         messages = new ArrayList<>();
+
+        textMsg.setHint("Nhập tin nhắn của bạn...");
+
+        repository.getRoomById(chatRoom.getRoomId(), (room)->{
+            if(room == null) btnSent.setEnabled(false);
+        });
 
         loadMessage();
 
@@ -97,11 +102,12 @@ public class ChatRoomFragment extends Fragment {
         });
 
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         return view;
     }
 
     private void loadMessage() {
-        repository.findChatRoom(chatRoom.getUsers().get(0), chatRoom.getUsers().get(1), (chatRoom) -> {
+        repository.findChatRoom(chatRoom.getRoomId(),chatRoom.getUsers().get(0), chatRoom.getUsers().get(1), (chatRoom) -> {
             this.chatRoom = chatRoom;
             if(chatRoom.getMessages() != null)
                 messages.addAll(chatRoom.getMessages());
@@ -113,14 +119,11 @@ public class ChatRoomFragment extends Fragment {
 
     private void updateMesage(String roomId){
         repository.listenToMessages(roomId, (newMessages) -> {
-            if(!messages.isEmpty()){
-                if(!newMessages.equals(this.messages)){
+                if(!newMessages.isEmpty()){
                     this.messages.clear();
                     this.messages.addAll(newMessages);
                     adapter.notifyDataSetChanged();
                 }
-
-            }
             }, (e) -> {});
     }
 
@@ -131,8 +134,6 @@ public class ChatRoomFragment extends Fragment {
             textMsg.setText("");
             selectedImageUri = null;
             imagePreview.setVisibility(View.GONE);
-//            messages.add(message);
-//            adapter.notifyDataSetChanged();
             btnSent.setEnabled(true);
             }, (e) -> {btnSent.setEnabled(true);});
     }
