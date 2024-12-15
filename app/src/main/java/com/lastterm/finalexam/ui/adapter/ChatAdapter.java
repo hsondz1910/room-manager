@@ -1,6 +1,7 @@
 package com.lastterm.finalexam.ui.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +18,14 @@ import com.lastterm.finalexam.data.repositories.RoomRepository;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter{
-    List<MessageClass> messages;
+    List<MessageClass> messages ;
     Context context;
     int item_Send = 0;
-    int item_Receive = 1;
+
 
     public ChatAdapter(List<MessageClass> messages, Context context) {
         this.messages = messages;
@@ -46,26 +48,68 @@ public class ChatAdapter extends RecyclerView.Adapter{
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         MessageClass msg = messages.get(position);
+        RoomRepository repository = new RoomRepository();
+
         if(msg.getsenderID() == "support"){
             if(holder.getClass() == senderViewHolder.class){
                 senderViewHolder viewHolder = (senderViewHolder) holder;
-                viewHolder.msg.setText(msg.getMessage());
-                viewHolder.date.setText(msg.getDate());
-                if(msg.getImg() != null && msg.getImg() != ""){
-                    Glide.with(context).load(msg.getImg()).into(viewHolder.img);
-                }
+                repository.getNameByUserID(msg.getsenderID(), (name) -> {
+                    viewHolder.name.setText(name);
+                    if (msg.getMessage() == "") viewHolder.msg.setVisibility(View.GONE);
+                    viewHolder.msg.setText(msg.getMessage());
+                    viewHolder.date.setText(msg.getDate());
+                    if(msg.getImg() != null && msg.getImg() != ""){
+                        Glide.with(context).load(msg.getImg()).into(viewHolder.img);
+                        viewHolder.img.setVisibility(View.VISIBLE);
+                    }
+                });
             }
             else {
                 receiverViewHolder viewHolder = (receiverViewHolder) holder;
-                viewHolder.msg.setText(msg.getMessage());
-                viewHolder.date.setText(msg.getDate());
-                if(msg.getImg() != null && msg.getImg() != ""){
-                    Glide.with(context).load(msg.getImg()).into(viewHolder.img);
-                }
+                repository.getNameByUserID(msg.getsenderID(), (name) -> {
+                    viewHolder.name.setText(name);
+                    if (msg.getMessage() == "") viewHolder.msg.setVisibility(View.GONE);
+                    viewHolder.msg.setText(msg.getMessage());
+                    viewHolder.date.setText(msg.getDate());
+                    if(msg.getImg() != null && msg.getImg() != ""){
+                        Glide.with(context).load(msg.getImg()).into(viewHolder.img);
+                        viewHolder.img.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+        }else {
+            if(holder.getClass() == senderViewHolder.class){
+                senderViewHolder viewHolder = (senderViewHolder) holder;
+                repository.getNameByUserID(msg.getsenderID(), (name) -> {
+                    viewHolder.name.setText(name);
+                    if (msg.getMessage() == "") viewHolder.msg.setVisibility(View.GONE);
+                    viewHolder.msg.setText(msg.getMessage());
+                    viewHolder.date.setText(msg.getDate());
+                    if(msg.getImg() != null && msg.getImg() != ""){
+                        Glide.with(context).load(msg.getImg()).into(viewHolder.img);
+                        viewHolder.img.setVisibility(View.VISIBLE);
+                    }
+                });
+
+            }
+            else {
+                receiverViewHolder viewHolder = (receiverViewHolder) holder;
+                repository.getNameByUserID(msg.getsenderID(), (name) -> {
+                    viewHolder.name.setText(name);
+                    if (msg.getMessage() == "") viewHolder.msg.setVisibility(View.GONE);
+                    viewHolder.msg.setText(msg.getMessage());
+                    viewHolder.date.setText(msg.getDate());
+                    if(msg.getImg() != null && msg.getImg() != ""){
+                        Glide.with(context).load(msg.getImg()).into(viewHolder.img);
+                        viewHolder.img.setVisibility(View.VISIBLE);
+                    }
+                });
             }
         }
 
     }
+
+
 
     @Override
     public int getItemCount() {
@@ -75,10 +119,16 @@ public class ChatAdapter extends RecyclerView.Adapter{
     @Override
     public int getItemViewType(int position) {
         RoomRepository roomRepository = new RoomRepository();
-        if(roomRepository.isCurrentUser(messages.get(position).getId()))
-            return item_Send;
-        else
-            return item_Receive;
+
+        if(roomRepository.isCurrentUser(messages.get(position).getsenderID())){
+
+            return 0;
+        }
+        else{
+
+            return 1;
+        }
+
     }
 
     class senderViewHolder extends RecyclerView.ViewHolder{

@@ -11,16 +11,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.DepositRequest;
 import com.lastterm.finalexam.ui.adapter.RequestManagementAdapter;
-
-import java.util.ArrayList;
+import com.lastterm.finalexam.data.repositories.RequestRepository;
 import java.util.List;
 
 public class RequestManagementFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private TextView tvStatusMessage;
-    private List<DepositRequest> depositRequests;
     private RequestManagementAdapter requestAdapter;
+    private RequestRepository requestRepository;
 
     public RequestManagementFragment() {
         // Required empty public constructor
@@ -39,19 +38,32 @@ public class RequestManagementFragment extends Fragment {
         // Setup RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Initialize data (in a real app, this would come from a database or API)
-        depositRequests = new ArrayList<>();
-        depositRequests.add(new DepositRequest("1", "user_123", "room_456", 100.00, "pending", System.currentTimeMillis(), "owner_789"));
-        depositRequests.add(new DepositRequest("2", "user_124", "room_457", 200.00, "approved", System.currentTimeMillis(), "owner_790"));
-        depositRequests.add(new DepositRequest("3", "user_125", "room_458", 150.00, "rejected", System.currentTimeMillis(), "owner_791"));
+        // Initialize RequestRepository
+        requestRepository = new RequestRepository();
 
-        // Initialize the adapter and set it to the RecyclerView
-        requestAdapter = new RequestManagementAdapter(depositRequests);
-        recyclerView.setAdapter(requestAdapter);
-
-        // Set status message (can be dynamic based on conditions)
-        tvStatusMessage.setText("You have " + depositRequests.size() + " requests pending.");
+        // Fetch data from Firestore
+        fetchDepositRequests();
 
         return view;
+    }
+
+    private void fetchDepositRequests() {
+        requestRepository.fetchDepositRequests(new RequestRepository.Callback() {
+            @Override
+            public void onSuccess(List<DepositRequest> depositRequests) {
+                // Tạo adapter mới và set dữ liệu vào RecyclerView
+                requestAdapter = new RequestManagementAdapter(depositRequests);
+                recyclerView.setAdapter(requestAdapter);  // Set adapter sau khi nhận được dữ liệu
+
+                // Cập nhật thông báo trạng thái
+                tvStatusMessage.setText("You have " + depositRequests.size() + " requests pending.");
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                // Xử lý lỗi và cập nhật giao diện
+                tvStatusMessage.setText(errorMessage);
+            }
+        });
     }
 }

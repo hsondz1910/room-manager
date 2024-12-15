@@ -49,7 +49,7 @@ public class RoomManagementFragment extends Fragment {
         setHasOptionsMenu(true);
 
         // Initialize FirebaseFirestore
-        db = FirebaseFirestore.getInstance(); // Khởi tạo db ở đây
+        db = FirebaseFirestore.getInstance();
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);

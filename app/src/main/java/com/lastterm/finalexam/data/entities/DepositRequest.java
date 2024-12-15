@@ -1,5 +1,7 @@
 package com.lastterm.finalexam.data.entities;
 
+import java.util.List;
+
 public class DepositRequest {
     private String requestId; // ID of the deposit request
     private String userId; // ID of the user
@@ -8,6 +10,7 @@ public class DepositRequest {
     private String status; // Status of the request (pending, approved, rejected)
     private long timestamp; // Time the request was created
     private String ownerId; // ID of the room owner
+    private List<String> roomImageUrls;
 
     public DepositRequest() {}
 
@@ -75,5 +78,13 @@ public class DepositRequest {
 
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public List<String> getRoomImageUrls() {
+        return roomImageUrls;
+    }
+
+    public void setRoomImageUrls(List<String> roomImageUrls) {
+        this.roomImageUrls = roomImageUrls;
     }
 }

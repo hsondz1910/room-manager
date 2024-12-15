@@ -13,31 +13,32 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.android.gms.tasks.Task;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.data.entities.uComment;
-import com.lastterm.finalexam.data.entities.Contract;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
+
+import com.lastterm.finalexam.ui.chat.ChatRoomFragment;
 import com.lastterm.finalexam.ui.adapter.CommentApdapter;
 import com.lastterm.finalexam.ui.adapter.ImageSliderAdapter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class RoomDetailFragment extends Fragment {
     TextView roomTitleTextView, roomPriceTextView, roomAreaTextView, roomDescriptionTextView;
-    TextView bookButton, addToFavoritesButton;
+    TextView bookButton, addToFavoritesButton, contactButton;
     ViewPager2 roomViewPager;
 
     TextView labelGood, labelNormal, labelBad;
@@ -48,7 +49,7 @@ public class RoomDetailFragment extends Fragment {
     ArrayList<uComment> comments;
     ArrayList<uComment> goodComments;
     ArrayList<uComment> normalComments;
-    ArrayList<uComment> bedComments;
+    ArrayList<uComment> badComments;
 
     RoomRepository repository;
     FirebaseFirestore db;
@@ -62,27 +63,27 @@ public class RoomDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frament_room_detail, container, false);
 
+        //TextView
         roomTitleTextView = view.findViewById(R.id.room_title);
         roomPriceTextView = view.findViewById(R.id.room_price);
         roomAreaTextView = view.findViewById(R.id.room_area);
         roomDescriptionTextView = view.findViewById(R.id.room_description);
+
+        //Button
         bookButton = view.findViewById(R.id.button_book);
         addToFavoritesButton = view.findViewById(R.id.button_add_to_favorites);
+        contactButton = view.findViewById(R.id.button_contact);
 
+        //Image
         roomViewPager = view.findViewById(R.id.room_image);
 
+        //Comment label
         labelGood = view.findViewById(R.id.label_good);
         labelNormal = view.findViewById(R.id.label_normal);
         labelBad = view.findViewById(R.id.label_bad);
         recyclerView = view.findViewById(R.id.comments_List);
 
-        comments = new ArrayList<>();
-        goodComments = new ArrayList<>();
-        normalComments = new ArrayList<>();
-        bedComments = new ArrayList<>();
-
         repository = new RoomRepository();
-        db = FirebaseFirestore.getInstance();
 
         roomTitleTextView.setText(room.getTitle());
         roomPriceTextView.setText("Price: " + String.format("%,.2f VND", room.getPrice()));
@@ -90,123 +91,143 @@ public class RoomDetailFragment extends Fragment {
         roomDescriptionTextView.setText(room.getDescription());
 
         if (room.isFavorite()) {
-            addToFavoritesButton.setText("Remove from Favorites");
-            addToFavoritesButton.setOnClickListener(view1 -> showDialog(room));
-        } else {
-            addToFavoritesButton.setText("Add to Favorites");
-            addToFavoritesButton.setOnClickListener(view1 -> addToFavorites());
+            addToFavoritesButton.setText("Remove from favorites");
+            addToFavoritesButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showDialog(room);
+                }
+            });
+
+        }
+        else {
+            addToFavoritesButton.setText("Add to favorites");
+            addToFavoritesButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FirebaseAuth auth = FirebaseAuth.getInstance();
+                    RoomRepository roomRepository = new RoomRepository();
+
+                    roomRepository.addToFavorites(room.getId(),auth.getCurrentUser().getUid(), (s) -> {
+                        if (s) {
+                            Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+                        }
+                    }, (e) -> {
+                        Log.d("fail: ", e.getMessage());});
+                    room.setFavorite(true);
+                    addToFavoritesButton.setText("Remove from favorites");
+                }
+            });
         }
 
-        if (!room.getImgUrls().isEmpty()) {
+        if(!room.getImgUrls().isEmpty()){
+
             try {
                 ImageSliderAdapter adapter = new ImageSliderAdapter(getContext(), room.getImgUrls());
                 roomViewPager.setAdapter(adapter);
             } catch (Exception e) {
-                Log.d("Error", "Error loading image: " + e.getMessage());
+                Log.d("Error", "Error loading image :" + e.getMessage());
             }
         }
 
-        loadComment();
-        setupCommentLabels();
+        // Comment
+        comments = new ArrayList<>();
+        goodComments = new ArrayList<>();
+        normalComments = new ArrayList<>();
+        badComments = new ArrayList<>();
+        labelGood.setText("Good");
+        labelNormal.setText("Normal");
+        labelBad.setText("Bad");
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        cmAdapter = new CommentApdapter(comments, getContext());
+        recyclerView.setAdapter(cmAdapter);
 
-        bookButton.setOnClickListener(view1 -> {
-            Log.d("Click button", "Clicked book button");
-            showBookingDialog();
-        });
-
-
-        return view;
-    }
-
-    private void addToFavorites() {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        repository.addToFavorites(room.getId(), auth.getCurrentUser().getUid(), success -> {
-            if (success) {
-                Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
-                room.setFavorite(true);
-                addToFavoritesButton.setText("Remove from Favorites");
-            }
-        }, error -> Log.d("fail: ", error.getMessage()));
-    }
-
-    private void setupCommentLabels() {
+        loadCOmment();
         ArrayList<TextView> labels = new ArrayList<>();
         labels.add(labelGood);
         labels.add(labelNormal);
         labels.add(labelBad);
         labels.forEach(label -> {
-            label.setOnClickListener(view -> {
+            label.setOnClickListener(view1 -> {
                 for (TextView lbl : labels) {
                     lbl.setSelected(false);
                 }
+
                 label.setSelected(true);
-                switch (label.getText().toString()) {
+                switch (label.getText().toString()){
                     case "Good":
                         cmAdapter.setComments(goodComments);
                         break;
                     case "Normal":
                         cmAdapter.setComments(normalComments);
                         break;
-                    case "Not good":
-                        cmAdapter.setComments(bedComments);
+                    case "Bad":
+                        cmAdapter.setComments(badComments);
                         break;
                 }
             });
         });
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        //Contact
+        contactButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment defaultFragment = new ChatRoomFragment(repository.getCurrentUser(), room.getOwnerId());
+                if (defaultFragment != null) {
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.fragment_container, defaultFragment);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                }
+            }
+        });
+
+        bookButton.setOnClickListener(view1 -> {
+            Log.d("Click button", "Clicked book button");
+            showBookingDialog();
+        });
+
+        return view;
     }
 
-    private void loadComment() {
-        repository.getCommentByRoomId(room.getId(), "good", comments -> goodComments.addAll(comments));
-        repository.getCommentByRoomId(room.getId(), "normal", comments -> normalComments.addAll(comments));
-        repository.getCommentByRoomId(room.getId(), "bbd", comments -> bedComments.addAll(comments));
-
-        comments.addAll(goodComments);
-        comments.addAll(normalComments);
-        comments.addAll(bedComments);
-        comments.sort(Comparator.comparing(comment -> comment.getDate()));
-        cmAdapter = new CommentApdapter(comments);
-        recyclerView.setAdapter(cmAdapter);
-    }
-
-    // Đoạn mã cập nhật cho việc tạo DepositRequest trong Dialog
+    // Updated code for creating DepositRequest in Dialog
 
     private void showBookingDialog() {
-        // Tính toán số tiền đặt cọc tối thiểu (30% giá phòng)
-        double minDepositAmount = room.getPrice() * 0.30; // 30% của giá phòng
+        // Calculate the minimum deposit amount (30% of the room price)
+        double minDepositAmount = room.getPrice() * 0.30; // 30% of room price
         String minDepositText = String.format("%,.2f VND", minDepositAmount);
 
-        // Tạo dialog cho người dùng nhập số tiền đặt cọc
+        // Create dialog for the user to enter the deposit amount
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_contract, null);
 
-        // Khởi tạo các phần tử trong dialog
+        // Initialize the elements in the dialog
         TextView contractTermsTextView = dialogView.findViewById(R.id.contract_terms_text);
         TextView depositTextView = dialogView.findViewById(R.id.deposit_amount_text);
         EditText depositInputEditText = dialogView.findViewById(R.id.deposit_input_edit_text);
 
-        // Hiển thị các điều khoản hợp đồng và số tiền đặt cọc tối thiểu
+        // Display the contract terms and minimum deposit amount
         contractTermsTextView.setText("Room description: " + room.getDescription());
         depositTextView.setText("Minimum deposit: " + minDepositText);
 
         builder.setView(dialogView)
                 .setTitle("Confirm Contract")
                 .setPositiveButton("Confirm", (dialog, which) -> {
-                    // Lấy số tiền đặt cọc mà người dùng đã nhập
+                    // Get the deposit amount entered by the user
                     String enteredDeposit = depositInputEditText.getText().toString();
                     if (enteredDeposit.isEmpty()) {
-                        // Nếu người dùng không nhập gì, sử dụng số tiền đặt cọc tối thiểu
+                        // If the user hasn't entered anything, use the minimum deposit amount
                         enteredDeposit = String.valueOf(minDepositAmount);
                     }
 
                     double depositAmount = Double.parseDouble(enteredDeposit);
 
                     if (depositAmount < minDepositAmount) {
-                        // Nếu số tiền đặt cọc nhỏ hơn tối thiểu, hiển thị thông báo
+                        // If the deposit amount is less than the minimum, show a message
                         Toast.makeText(getContext(), "Deposit must be greater than or equal to " + minDepositText, Toast.LENGTH_SHORT).show();
                     } else {
-                        // Gửi yêu cầu đặt cọc đến Firestore (chủ phòng sẽ phê duyệt)
+                        // Send the deposit request to Firestore (host will approve)
                         sendDepositRequest(depositAmount);
                     }
                 })
@@ -218,16 +239,23 @@ public class RoomDetailFragment extends Fragment {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String userId = auth.getCurrentUser().getUid();
         String roomId = room.getId();
-        String ownerId = room.getOwnerId(); // ID chủ phòng
+        String ownerId = room.getOwnerId(); // Room owner's ID
 
-        // Tạo yêu cầu đặt cọc để gửi tới Firestore
+        // Create deposit request to send to Firestore
         Map<String, Object> depositRequest = new HashMap<>();
         depositRequest.put("userId", userId);
         depositRequest.put("roomId", roomId);
         depositRequest.put("depositAmount", depositAmount);
-        depositRequest.put("status", "pending"); // Chờ chủ phòng phê duyệt
+        depositRequest.put("status", "pending"); // Status: awaiting approval
         depositRequest.put("timestamp", System.currentTimeMillis());
-        depositRequest.put("ownerId", ownerId); // ID chủ phòng
+        depositRequest.put("ownerId", ownerId); // Room owner's ID
+
+        // Get the list of room image URLs (take all images in the room)
+        List<String> roomImageUrls = room.getImgUrls(); // Ensure that you have `imgUrls` property in `Room`
+
+        if (roomImageUrls != null && !roomImageUrls.isEmpty()) {
+            depositRequest.put("roomImageUrls", roomImageUrls); // Save image list into the request
+        }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("depositRequests")
@@ -249,11 +277,32 @@ public class RoomDetailFragment extends Fragment {
                 .setPositiveButton("Yes", (dialog, which) -> {
                     FirebaseAuth auth = FirebaseAuth.getInstance();
                     repository.removeFromFavorites(roomId, auth.getCurrentUser().getUid(), null, null);
-                    Toast.makeText(getContext(), "Room " + room.getTitle() + " removed from favorites", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Removed room " + room.getTitle() + " from favorites", Toast.LENGTH_SHORT).show();
                     room.setFavorite(false);
-                    addToFavoritesButton.setText("Add to Favorites");
+                    addToFavoritesButton.setText("Add to favorites");
                 })
                 .setNegativeButton("No", null)
                 .create().show();
+    }
+
+    private void loadCOmment() {
+        repository.getCommentByRoomId(room.getId(), "good", (comment) -> {
+            goodComments.addAll(comment);
+            comments.addAll(comment);
+            comments.sort(Comparator.comparing(cm -> cm.getDate()));
+            cmAdapter.notifyDataSetChanged();
+        });
+        repository.getCommentByRoomId(room.getId(), "normal", (comment) -> {
+            normalComments.addAll(comment);
+            comments.addAll(comment);
+            comments.sort(Comparator.comparing(cm -> cm.getDate()));
+            cmAdapter.notifyDataSetChanged();
+        });
+        repository.getCommentByRoomId(room.getId(), "bad", (comment) -> {
+            badComments.addAll(comment);
+            comments.addAll(comment);
+            comments.sort(Comparator.comparing(cm -> cm.getDate()));
+            cmAdapter.notifyDataSetChanged();
+        });
     }
 }

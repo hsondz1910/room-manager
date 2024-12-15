@@ -12,6 +12,13 @@ public class MessageClass {
     public MessageClass() {
     }
 
+    public MessageClass(String message, String senderID, String date, String img) {
+        this.message = message;
+        this.senderID = senderID;
+        this.date = date;
+        this.img = img;
+    }
+
     public MessageClass(String id, String message, String senderID, String date, String img) {
         this.id = id;
         this.message = message;
