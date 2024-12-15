@@ -14,6 +14,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.lastterm.finalexam.ui.contract.ContractFragment;
+import com.lastterm.finalexam.ui.contract.ContractManagementFragment;
 import com.lastterm.finalexam.ui.fragments.contact.ContactFrament;
 import com.lastterm.finalexam.ui.fragments.home.AdminHomeFragment;
 import com.lastterm.finalexam.ui.fragments.home.OwnerHomeFragment;
