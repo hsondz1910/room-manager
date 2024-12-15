@@ -1,0 +1,46 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/startDateInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="false"
+        android:hint="@string/start_day"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/endDateInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="false"
+        android:hint="@string/end_day"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/rentAmountInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/rent_amount"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/contractTermsInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/contract_terms"
+        android:inputType="text"
+        android:minHeight="48dp" />
+
+    <Button
+        android:id="@+id/createContractButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_contract"/>
+</LinearLayout>

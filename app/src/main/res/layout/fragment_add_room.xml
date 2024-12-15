@@ -8,21 +8,21 @@
         android:id="@+id/edtTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Tiêu đề"
+        android:hint="@string/room_title"
         android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/edtAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Địa chỉ"
+        android:hint="@string/address"
         android:minHeight="48dp" />
 
     <EditText
         android:id="@+id/edtPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Giá thuê"
+        android:hint="@string/rent"
         android:inputType="numberDecimal"
         android:minHeight="48dp" />
 
@@ -30,7 +30,7 @@
         android:id="@+id/edtArea"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Diện tích (m²)"
+        android:hint="@string/area"
         android:inputType="numberDecimal"
         android:minHeight="48dp" />
 
@@ -38,12 +38,12 @@
         android:id="@+id/edtDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Mô tả"
+        android:hint="@string/room_description"
         android:minHeight="48dp" />
 
     <Button
         android:id="@+id/btnChooseImage"
-        android:text="Chọn hình ảnh"
+        android:text="@string/select_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
@@ -63,7 +63,7 @@
 
     <Button
         android:id="@+id/btnUpload"
-        android:text="Đăng bài"
+        android:text="@string/post"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </LinearLayout>

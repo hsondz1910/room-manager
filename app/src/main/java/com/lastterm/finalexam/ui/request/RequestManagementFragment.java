@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.DepositRequest;
@@ -54,7 +55,8 @@ public class RequestManagementFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Khởi tạo adapter rỗng và gán cho RecyclerView
-        requestAdapter = new RequestManagementAdapter(new ArrayList<>());
+        requestAdapter = new RequestManagementAdapter(new ArrayList<>(), requireContext());
+        recyclerView.setAdapter(requestAdapter);
         recyclerView.setAdapter(requestAdapter);
 
         fetchDepositRequests();
@@ -68,14 +70,28 @@ public class RequestManagementFragment extends Fragment {
             return;
         }
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        // Get the current user's ownerId (assuming the current user is logged in and you can access this)
+        String currentUserId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
+
         requestRepository.fetchDepositRequests(new RequestRepository.Callback() {
             @Override
             public void onSuccess(List<DepositRequest> depositRequests) {
-                // Update adapter with new data
-                requestAdapter.updateData(depositRequests);
+                // Filter requests by ownerId (assuming DepositRequest has ownerId)
+                List<DepositRequest> filteredRequests = new ArrayList<>();
+                for (DepositRequest request : depositRequests) {
+                    if (request.getOwnerId().equals(currentUserId)) {
+                        filteredRequests.add(request);
+                    }
+                }
+
+                // Update adapter with filtered data
+                requestAdapter.updateData(filteredRequests);
 
                 // Update status message
-                tvStatusMessage.setText("Bạn có các yêu cầu \" + depositRequests.size() + \" đang chờ xử lý.");
+                tvStatusMessage.setText("You have " + filteredRequests.size() + " requests waiting to be processed.");
             }
 
             @Override
@@ -86,6 +102,7 @@ public class RequestManagementFragment extends Fragment {
             }
         });
     }
+
 
 
     @Override

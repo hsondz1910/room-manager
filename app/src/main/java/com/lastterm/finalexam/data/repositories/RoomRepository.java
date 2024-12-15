@@ -51,13 +51,6 @@ public class RoomRepository {
         storage = FirebaseStorage.getInstance().getReference();
     }
 
-    public void addRoom(Room room, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        db.collection("rooms").document()
-                .set(room)
-                .addOnSuccessListener(onSuccess)
-                .addOnFailureListener(onFailure);
-    }
-
     public void getAllRooms(Consumer<List<Room>> callback) {
         db.collection("rooms")
                 .get()

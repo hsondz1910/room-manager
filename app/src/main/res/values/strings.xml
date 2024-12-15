@@ -21,9 +21,9 @@
     <string name="room_management">Quản lý phòng trọ</string>
     <string name="create_post">Đăng bài</string>
     <string name="see_details">Xem chi tiết</string>
-    <string name="room_title">Room Title</string>
-    <string name="price">Price</string>
-    <string name="address">Address</string>
+    <string name="room_title">Tiêu đề phòng</string>
+    <string name="price">Giá</string>
+    <string name="address">Địa chỉ</string>
     <string name="delete">Xoá</string>
     <string name="add_contract">Thêm hợp đồng</string>
     <string name="contract_management">Quản lý hợp đồng</string>
@@ -37,4 +37,17 @@
     <string name="delete_selected">Xoá chỉ mục được chọn</string>
     <string name="delete_all">Xóa tất cả</string>
     <string name="request_management">Quản lý yêu cầu</string>
+    <string name="create_contract">Tạo hợp đồng</string>
+    <string name="reject">Từ chối</string>
+    <string name="deposit_amount">Số tiền gửi</string>
+    <string name="end_day">Ngày kết thúc</string>
+    <string name="start_day">Ngày bắt đầu</string>
+    <string name="contract_terms">Điều khoản hợp đồng</string>
+    <string name="room_description">Mô tả phòng trọ</string>
+    <string name="minimum_deposit_amount">Số tiền cọc tối thiểu</string>
+    <string name="enter_deposit_amount">Nhập số tiền cọc (VND)</string>
+    <string name="rent">Giá thuê</string>
+    <string name="area">Diện tích (m²)</string>
+    <string name="select_image">Chọn hình ảnh</string>
+    <string name="post">Đăng bài</string>
 </resources>

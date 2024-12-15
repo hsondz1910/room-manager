@@ -21,7 +21,7 @@
             android:id="@+id/roomTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Room Title"
+            android:text="@string/room_title"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -29,14 +29,14 @@
             android:id="@+id/depositAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Deposit Amount"
+            android:text="@string/deposit_amount"
             android:textSize="16sp" />
 
         <TextView
             android:id="@+id/userName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="User Name"
+            android:text="@string/username"
             android:textSize="14sp" />
 
         <LinearLayout
@@ -49,14 +49,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#4CAF50"
-                android:text="Create Contract" />
+                android:text="@string/create_contract" />
 
             <Button
                 android:id="@+id/rejectButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#E91E63"
-                android:text="Reject" />
+                android:text="@string/reject" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
