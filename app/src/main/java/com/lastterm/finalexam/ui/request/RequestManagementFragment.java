@@ -54,7 +54,6 @@ public class RequestManagementFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Khởi tạo adapter rỗng và gán cho RecyclerView
         requestAdapter = new RequestManagementAdapter(new ArrayList<>(), requireContext());
         recyclerView.setAdapter(requestAdapter);
         recyclerView.setAdapter(requestAdapter);

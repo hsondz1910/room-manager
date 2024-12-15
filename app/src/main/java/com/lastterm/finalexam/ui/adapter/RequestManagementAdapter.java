@@ -30,10 +30,6 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
     private List<DepositRequest> depositRequestsList;
     private Context context;
 
-    public RequestManagementAdapter(List<DepositRequest> depositRequestsList) {
-        this.depositRequestsList = depositRequestsList;
-    }
-
     public RequestManagementAdapter(List<DepositRequest> depositRequestsList, Context context) {
         this.depositRequestsList = depositRequestsList;
         this.context = context;
@@ -68,6 +64,8 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
                 .addOnFailureListener(e -> {
                     holder.userName.setText("Tên phòng: Không có sẵn");
                 });
+
+        holder.depositAmount.setText("Số tiền gửi: " + request.getDepositAmount() + "VNĐ");
 
         db.collection("users") // Assuming user data is in "users" collection
                 .document(request.getUserId()) // Fetch document by userId

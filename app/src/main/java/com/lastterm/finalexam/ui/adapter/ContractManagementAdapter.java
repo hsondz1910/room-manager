@@ -106,9 +106,4 @@ public class ContractManagementAdapter extends RecyclerView.Adapter<ContractMana
             menuIcon = itemView.findViewById(R.id.menuIcon);
         }
     }
-
-    // Interface for handling contract click events
-    public interface OnContractClickListener {
-        void onContractClick(Contract contract);
-    }
 }

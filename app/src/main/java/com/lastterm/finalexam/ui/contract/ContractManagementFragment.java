@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.lastterm.finalexam.R;
+import com.lastterm.finalexam.data.repositories.ContractRepository;
 import com.lastterm.finalexam.ui.adapter.ContractManagementAdapter;
 import com.lastterm.finalexam.data.entities.Contract;
 
@@ -70,22 +71,20 @@ public class ContractManagementFragment extends Fragment {
     }
 
     private void loadContracts() {
-        db.collection("contracts")
-                .whereEqualTo("ownerId", userId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        contractList.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Contract contract = document.toObject(Contract.class);
-                            contract.setContractId(document.getId());
-                            contractList.add(contract);
-                        }
-                        contractManagementAdapter.notifyDataSetChanged();
-                    } else {
-                        Toast.makeText(getContext(), "Failed to load contracts", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        ContractRepository contractRepository = new ContractRepository();
+        contractRepository.fetchContractsByUserId(userId, new ContractRepository.Callback() {
+            @Override
+            public void onSuccess(List<Contract> contracts) {
+                contractList.clear();
+                contractList.addAll(contracts);
+                contractManagementAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -122,6 +121,28 @@ public class ContractManagementFragment extends Fragment {
         }
         allChecked = !allChecked;
         contractManagementAdapter.notifyDataSetChanged();
+    }
+
+    private void deleteContract(String contractId) {
+        ContractRepository contractRepository = new ContractRepository();
+        contractRepository.deleteContract(contractId, new ContractRepository.Callback() {
+            @Override
+            public void onSuccess(List<Contract> contracts) {
+                // Remove contract from the list
+                for (Contract contract : contractList) {
+                    if (contract.getContractId().equals(contractId)) {
+                        contractList.remove(contract);
+                        break;
+                    }
+                }
+                contractManagementAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void deleteSelectedContracts() {
