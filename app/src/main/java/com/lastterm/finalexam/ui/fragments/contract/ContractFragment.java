@@ -1,4 +1,4 @@
-package com.lastterm.finalexam.ui.contract;
+package com.lastterm.finalexam.ui.fragments.contract;
 
 import androidx.fragment.app.Fragment;
 

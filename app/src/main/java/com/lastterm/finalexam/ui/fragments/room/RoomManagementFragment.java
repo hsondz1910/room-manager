@@ -1,4 +1,4 @@
-package com.lastterm.finalexam.ui.room;
+package com.lastterm.finalexam.ui.fragments.room;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -19,10 +19,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;

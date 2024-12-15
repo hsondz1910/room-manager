@@ -22,7 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
-import com.lastterm.finalexam.ui.room.RoomDetailFragment;
+import com.lastterm.finalexam.ui.fragments.room.RoomDetailFragment;
 
 import java.util.List;
 

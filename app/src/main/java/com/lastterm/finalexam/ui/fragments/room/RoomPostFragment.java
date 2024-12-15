@@ -1,4 +1,4 @@
-package com.lastterm.finalexam.ui.room;
+package com.lastterm.finalexam.ui.fragments.room;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

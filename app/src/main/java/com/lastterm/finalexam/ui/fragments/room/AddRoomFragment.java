@@ -1,4 +1,4 @@
-package com.lastterm.finalexam.ui.room;
+package com.lastterm.finalexam.ui.fragments.room;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -17,17 +17,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.ChatRoom;
 import com.lastterm.finalexam.data.entities.MessageClass;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
 import com.lastterm.finalexam.ui.fragments.contact.ChatRoomFragment;
-import com.lastterm.finalexam.ui.room.RoomDetailFragment;
 
 import java.util.List;
 

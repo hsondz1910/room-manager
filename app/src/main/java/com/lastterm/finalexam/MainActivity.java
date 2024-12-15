@@ -14,16 +14,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.lastterm.finalexam.ui.contract.ContractFragment;
-import com.lastterm.finalexam.ui.contract.ContractManagementFragment;
+import com.lastterm.finalexam.ui.fragments.contract.ContractManagementFragment;
 import com.lastterm.finalexam.ui.fragments.contact.ContactFrament;
 import com.lastterm.finalexam.ui.fragments.home.AdminHomeFragment;
-import com.lastterm.finalexam.ui.fragments.home.OwnerHomeFragment;
-import com.lastterm.finalexam.ui.fragments.home.TenantHomeFragment;
 import com.lastterm.finalexam.ui.fragments.favorites.FavoritesFragment;
 import com.lastterm.finalexam.ui.fragments.SettingFragment;
-import com.lastterm.finalexam.ui.request.RequestManagementFragment;
-import com.lastterm.finalexam.ui.room.RoomManagementFragment;
+import com.lastterm.finalexam.ui.fragments.request.RequestManagementFragment;
+import com.lastterm.finalexam.ui.fragments.room.RoomManagementFragment;
 import com.lastterm.finalexam.ui.fragments.search.SearchFragment;
 
 public class MainActivity extends AppCompatActivity {
