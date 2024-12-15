@@ -14,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.lastterm.finalexam.ui.contract.ContractManagementFragment;
 import com.lastterm.finalexam.ui.fragments.contact.ContactFrament;
 import com.lastterm.finalexam.ui.fragments.home.AdminHomeFragment;
 import com.lastterm.finalexam.ui.fragments.home.OwnerHomeFragment;
@@ -117,6 +118,10 @@ public class MainActivity extends AppCompatActivity {
                 // Fragment cho Owner
                 if (item.getItemId() == R.id.nav_room_management) {
                     selectedFragment = new RoomManagementFragment();
+                } else if (item.getItemId() == R.id.nav_contract_management) {
+                    selectedFragment = new ContractManagementFragment();
+                } else if (item.getItemId() == R.id.nav_request_management) {
+                    selectedFragment = new RequestManagementFragment();
                 }else if (item.getItemId() == R.id.nav_contact) {
                     selectedFragment = new ContactFrament("owner");
                 } else if (item.getItemId() == R.id.nav_setting) {
