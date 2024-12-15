@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
     <item
         android:id="@+id/check_all"
-        android:title="Check all/Uncheck all" />
+        android:title="Đánh dấu tất cả/Bỏ đánh dấu tất cả" />
     <item
         android:id="@+id/delete_selected"
-        android:title="Delete selected" />
+        android:title="Xóa mục đã chọn" />
     <item
         android:id="@+id/delete_all"
-        android:title="Delete all" />
+        android:title="Xóa tất cả" />
 </menu>

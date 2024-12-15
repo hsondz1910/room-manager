@@ -87,7 +87,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:text="Book Now"
+                    android:text="Đặt cọc ngay"
                     android:textColor="#FFFFFF" />
 
                 <Button
@@ -97,7 +97,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:text="Add to Favorites"
+                    android:text="Thêm vào mục yêu thích"
                     android:textColor="#FFFFFF" />
 
                 <Button
@@ -106,12 +106,11 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:text="Contact"
+                    android:text="Liên hệ"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
 
             <LinearLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -122,6 +121,7 @@
                     android:id="@+id/label_good"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:layout_weight="1"
                     android:background="@drawable/label_background"
                     android:backgroundTint="#009688"
@@ -135,6 +135,7 @@
                     android:id="@+id/label_normal"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:layout_weight="1"
                     android:background="@drawable/label_background"
                     android:backgroundTint="#4CAF50"
@@ -148,6 +149,7 @@
                     android:id="@+id/label_bad"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
                     android:layout_weight="1"
                     android:background="@drawable/label_background"
                     android:backgroundTint="#CDDC39"

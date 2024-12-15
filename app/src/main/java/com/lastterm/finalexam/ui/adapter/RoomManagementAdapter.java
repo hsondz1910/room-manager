@@ -1,18 +1,25 @@
 package com.lastterm.finalexam.ui.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -93,6 +100,7 @@ public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAd
                 return true;
             } else if (id == R.id.action_edit) {
                 Toast.makeText(context, "Chỉnh sửa " + room.getTitle(), Toast.LENGTH_SHORT).show();
+                showEditDialog(room, holder);
                 return true;
             } else if (id == R.id.action_delete) {
                 Toast.makeText(context, "Xoá bỏ " + room.getTitle(), Toast.LENGTH_SHORT).show();
@@ -116,6 +124,83 @@ public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAd
         });
 
         popupMenu.show();
+    }
+
+    private void showEditDialog(Room room, RoomViewHolder holder) {
+        // Inflating custom layout XML
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_room, null);
+
+        // Find the views in the dialog
+        EditText editTitle = dialogView.findViewById(R.id.editRoomTitle);
+        EditText editPrice = dialogView.findViewById(R.id.editRoomPrice);
+        EditText editAddress = dialogView.findViewById(R.id.editRoomAddress);
+        ImageView editRoomImage = dialogView.findViewById(R.id.editRoomImage);
+        Button btnChooseImage = dialogView.findViewById(R.id.btnChooseImage);
+
+        // Set default values in the EditText fields
+        editTitle.setText(room.getTitle());
+        editPrice.setText(String.valueOf(room.getPrice()));
+        editAddress.setText(room.getAddress());
+
+        // Show the current image if available
+        if (room.getImgUrls() != null && !room.getImgUrls().isEmpty()) {
+            Glide.with(context)
+                    .load(room.getImgUrls().get(0))
+                    .placeholder(R.drawable.placeholder_img)
+                    .error(R.drawable.error_image)
+                    .into(editRoomImage);
+        }
+
+        // Select a new image from the gallery or take a new photo
+        btnChooseImage.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.setType("image/*");
+            ((Activity) context).startActivityForResult(intent, 1); // 1 is the request code
+        });
+
+        // Create an AlertDialog with custom layout
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Chỉnh sửa phòng trọ");
+        builder.setView(dialogView);
+
+        // Handle "Save" button click
+        builder.setPositiveButton("Lưu", (dialog, which) -> {
+            // Get data from the EditText fields
+            String newTitle = editTitle.getText().toString();
+            String newPrice = editPrice.getText().toString();
+            String newAddress = editAddress.getText().toString();
+
+            // Validate inputs
+            if (newTitle.isEmpty() || newPrice.isEmpty() || newAddress.isEmpty()) {
+                Toast.makeText(context, "Vui lòng điền vào tất cả các trường", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Update room information
+            room.setTitle(newTitle);
+            room.setPrice(Double.parseDouble(newPrice));
+            room.setAddress(newAddress);
+
+            // Update the Firestore data
+            db.collection("rooms").document(room.getId())
+                    .update("title", newTitle, "price", Double.parseDouble(newPrice), "address", newAddress)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(context, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                        roomList.set(holder.getAdapterPosition(), room);  // Update the room in the list
+                        notifyItemChanged(holder.getAdapterPosition());  // Notify the adapter to refresh the UI
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(context, "Cập nhật không thành công", Toast.LENGTH_SHORT).show();
+                    });
+        });
+
+        // Set up "Cancel" button
+        builder.setNegativeButton("Hủy bỏ", (dialog, which) -> {
+            // Do nothing if the user presses cancel
+        });
+
+        // Show the dialog
+        builder.show();
     }
 
     @Override
