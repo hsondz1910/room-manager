@@ -1,69 +1,75 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="16dp"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
-    <EditText
-        android:id="@+id/edtTitle"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/room_title"
-        android:minHeight="48dp" />
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/edtAddress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/address"
-        android:minHeight="48dp" />
+        <EditText
+            android:id="@+id/edtTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/room_title"
+            android:minHeight="48dp" />
 
-    <EditText
-        android:id="@+id/edtPrice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/rent"
-        android:inputType="numberDecimal"
-        android:minHeight="48dp" />
+        <EditText
+            android:id="@+id/edtAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/address"
+            android:minHeight="48dp" />
 
-    <EditText
-        android:id="@+id/edtArea"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/area"
-        android:inputType="numberDecimal"
-        android:minHeight="48dp" />
+        <EditText
+            android:id="@+id/edtPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/rent"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
 
-    <EditText
-        android:id="@+id/edtDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/room_description"
-        android:minHeight="48dp" />
+        <EditText
+            android:id="@+id/edtArea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/area"
+            android:inputType="numberDecimal"
+            android:minHeight="48dp" />
 
-    <Button
-        android:id="@+id/btnChooseImage"
-        android:text="@string/select_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <EditText
+            android:id="@+id/edtDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/room_description"
+            android:minHeight="48dp" />
 
-    <ImageView
-        android:id="@+id/imgPreview"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:visibility="gone"/>
+        <Button
+            android:id="@+id/btnChooseImage"
+            android:text="@string/select_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_gravity="center" />
+        <ImageView
+            android:id="@+id/imgPreview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/btnUpload"
-        android:text="@string/post"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-</LinearLayout>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="center" />
+
+        <Button
+            android:id="@+id/btnUpload"
+            android:text="@string/post"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</ScrollView>

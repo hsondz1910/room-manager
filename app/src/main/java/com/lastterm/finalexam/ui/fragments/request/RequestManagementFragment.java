@@ -69,28 +69,41 @@ public class RequestManagementFragment extends Fragment {
             return;
         }
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseAuth auth = FirebaseAuth.getInstance();
 
         // Get the current user's ownerId (assuming the current user is logged in and you can access this)
         String currentUserId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
 
+        if (currentUserId == null) {
+            tvStatusMessage.setText("Please log in to view requests.");
+            return;
+        }
+
         requestRepository.fetchDepositRequests(new RequestRepository.Callback() {
             @Override
             public void onSuccess(List<DepositRequest> depositRequests) {
-                // Filter requests by ownerId (assuming DepositRequest has ownerId)
-                List<DepositRequest> filteredRequests = new ArrayList<>();
-                for (DepositRequest request : depositRequests) {
-                    if (request.getOwnerId().equals(currentUserId)) {
-                        filteredRequests.add(request);
+                if (depositRequests == null || depositRequests.isEmpty()) {
+                    tvStatusMessage.setText("No requests found.");
+                } else {
+                    // Filter requests by ownerId and status
+                    List<DepositRequest> filteredRequests = new ArrayList<>();
+                    for (DepositRequest request : depositRequests) {
+                        if (request.getOwnerId().equals(currentUserId) &&
+                                !"contract_created".equals(request.getStatus()) &&
+                                !"rejected".equals(request.getStatus())) {
+                            filteredRequests.add(request);
+                        }
                     }
+
+                    // Log the filtered requests for debugging
+                    Log.d("RequestManagement", "Filtered requests: " + filteredRequests.size());
+
+                    // Update adapter with filtered data
+                    requestAdapter.updateData(filteredRequests);
+
+                    // Update status message
+                    tvStatusMessage.setText("Bạn có " + filteredRequests.size() + " yêu cầu đang chờ xử lý.");
                 }
-
-                // Update adapter with filtered data
-                requestAdapter.updateData(filteredRequests);
-
-                // Update status message
-                tvStatusMessage.setText("Bạn có " + filteredRequests.size() + " yêu cầu đang chờ xử lý.");
             }
 
             @Override

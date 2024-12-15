@@ -16,24 +16,19 @@ public class RequestRepository {
         db = FirebaseFirestore.getInstance();
     }
 
-    public void fetchDepositRequests(Callback callback) {
+    public void fetchDepositRequests(final Callback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("depositRequests")
                 .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<DepositRequest> depositRequests = new ArrayList<>();
-                        for (DocumentSnapshot document : task.getResult()) {
-                            DepositRequest depositRequest = document.toObject(DepositRequest.class);
-                            depositRequests.add(depositRequest);
-                        }
-                        callback.onSuccess(depositRequests);
-                    } else {
-                        callback.onError("Failed to fetch deposit requests.");
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (queryDocumentSnapshots != null) {
+                        List<DepositRequest> requests = queryDocumentSnapshots.toObjects(DepositRequest.class);
+                        callback.onSuccess(requests);
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("RequestRepository", "Error fetching deposit requests", e);
-                    callback.onError(e.getMessage());
+                    Log.e("RequestRepository", "Error fetching deposit requests: ", e);
+                    callback.onError("Failed to fetch data");
                 });
     }
 

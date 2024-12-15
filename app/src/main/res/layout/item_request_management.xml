@@ -39,6 +39,12 @@
             android:text="@string/username"
             android:textSize="14sp" />
 
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Trạng thái" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

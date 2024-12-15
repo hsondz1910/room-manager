@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import android.util.Log;
 
 public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManagementAdapter.RequestViewHolder> {
     private List<DepositRequest> depositRequestsList;
@@ -44,14 +45,12 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
 
     @Override
     public void onBindViewHolder(@NonNull RequestViewHolder holder, int position) {
-        // Fetch userName from Firestore using userId
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         DepositRequest request = depositRequestsList.get(position);
 
         // Bind data to UI elements
-        db.collection("rooms") // Assuming user data is in "rooms" collection
-                .document(request.getRoomId()) // Fetch document by roomId
+        db.collection("rooms")
+                .document(request.getRoomId())
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -67,8 +66,8 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
 
         holder.depositAmount.setText("Số tiền gửi: " + request.getDepositAmount() + "VNĐ");
 
-        db.collection("users") // Assuming user data is in "users" collection
-                .document(request.getUserId()) // Fetch document by userId
+        db.collection("users")
+                .document(request.getUserId())
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -94,10 +93,74 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
             holder.roomImage.setImageResource(R.drawable.placeholder_img);
         }
 
+        // Convert status to Vietnamese and display it
+        String statusInVietnamese = getStatusInVietnamese(request.getStatus());
+        holder.roomStatus.setText("Trạng thái: " + statusInVietnamese);
+
+        // Handle reject button click
+        holder.rejectButton.setOnClickListener(v -> {
+
+            db.collection("depositRequests")
+                    .document(request.getRequestId())
+                    .update("status", "rejected")
+                    .addOnSuccessListener(aVoid -> {
+                        // Display a message to the user
+                        Toast.makeText(context, "Yêu cầu đã bị từ chối.", Toast.LENGTH_SHORT).show();
+
+                        // Update the request status in the list
+                        request.setStatus("rejected");
+
+                        // Disable the button and update the interface immediately
+                        holder.createContractButton.setEnabled(false);
+                        holder.createContractButton.setAlpha(0.5f);
+                        holder.rejectButton.setEnabled(false);
+                        holder.rejectButton.setAlpha(0.5f);
+                        holder.roomStatus.setText("Trạng thái: Đã bị từ chối");
+
+                        // Notify the adapter that the data has changed to reflect the updated status
+                        notifyItemChanged(position); // This updates only the current item in the list
+                    })
+                    .addOnFailureListener(e -> {
+                        // Catch errors and display messages
+                        e.printStackTrace(); // Detailed error log
+                        Toast.makeText(context, "Lỗi khi từ chối yêu cầu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        });
+
+        // Disable buttons based on the status
+        if ("approved".equals(request.getStatus()) || "contract_created".equals(request.getStatus()) || "rejected".equals(request.getStatus())) {
+            holder.createContractButton.setEnabled(false);
+            holder.createContractButton.setAlpha(0.5f); // Optional: Dim the button
+            holder.rejectButton.setEnabled(false);
+            holder.rejectButton.setAlpha(0.5f); // Optional: Dim the button
+        } else {
+            holder.createContractButton.setEnabled(true);
+            holder.createContractButton.setAlpha(1.0f);
+            holder.rejectButton.setEnabled(true);
+            holder.rejectButton.setAlpha(1.0f);
+        }
+
+        // Handle create contract button click
         holder.createContractButton.setOnClickListener(v -> {
             // Show the dialog to create contract
             showCreateContractDialog(request);
         });
+    }
+
+
+    private String getStatusInVietnamese(String status) {
+        switch (status) {
+            case "approved":
+                return "Đã duyệt";
+            case "rejected":
+                return "Bị từ chối";
+            case "pending":
+                return "Đang chờ";
+            case "contract_created":
+                return "Hợp đồng đã tạo";
+            default:
+                return "Chưa xác định";
+        }
     }
 
     public void updateData(List<DepositRequest> newRequests) {
@@ -207,7 +270,7 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
     }
 
     public static class RequestViewHolder extends RecyclerView.ViewHolder {
-        TextView roomTitle, depositAmount, userName;
+        TextView roomTitle, depositAmount, userName, roomStatus;
         Button createContractButton, rejectButton;
         ImageView roomImage;
 
@@ -216,6 +279,7 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
             roomTitle = itemView.findViewById(R.id.roomTitle);
             depositAmount = itemView.findViewById(R.id.depositAmount);
             userName = itemView.findViewById(R.id.userName);
+            roomStatus = itemView.findViewById(R.id.status);
             createContractButton = itemView.findViewById(R.id.createContractButton);
             rejectButton = itemView.findViewById(R.id.rejectButton);
             roomImage = itemView.findViewById(R.id.roomImageManagement);
