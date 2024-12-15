@@ -6,7 +6,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +36,7 @@ import com.lastterm.finalexam.ui.adapter.CommentApdapter;
 import com.lastterm.finalexam.ui.adapter.ImageSliderAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +50,8 @@ public class RoomDetailFragment extends Fragment {
     TextView labelGood, labelNormal, labelBad;
     RecyclerView recyclerView;
     CommentApdapter cmAdapter;
+    Spinner spinner;
+    EditText txtAddComment;
 
     Room room;
     ArrayList<uComment> comments;
@@ -83,6 +90,12 @@ public class RoomDetailFragment extends Fragment {
         labelNormal = view.findViewById(R.id.label_normal);
         labelBad = view.findViewById(R.id.label_bad);
         recyclerView = view.findViewById(R.id.comments_List);
+
+        //Add comment
+        spinner = view.findViewById(R.id.spinner_rate);
+        txtAddComment = view.findViewById(R.id.txt_add_comment);
+
+
 
         repository = new RoomRepository();
 
@@ -131,14 +144,64 @@ public class RoomDetailFragment extends Fragment {
             }
         }
 
+        //Add comment
+        List<String> lb = Arrays.asList("Tốt", "Bình thường", "Tệ");
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, lb);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        final String[] rate = {"good"};
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedLabel = lb.get(position);
+                switch (selectedLabel){
+                    case "Tốt":
+                        rate[0] = "good";
+                        break;
+                    case "Bình thường":
+                        rate[0] = "normal";
+                        break;
+                    case "Tệ":
+                        rate[0] = "bad";
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Handle no selection
+            }
+        });
+
+        txtAddComment.setHint("Bình luận");
+
+        txtAddComment.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEND || actionId == EditorInfo.IME_ACTION_DONE) {
+                String message = txtAddComment.getText().toString().trim();
+
+                if (!message.isEmpty()) {
+
+                    showDialogSendComment(rate[0], message);
+                    cmAdapter.notifyDataSetChanged();
+                    txtAddComment.setText("");
+                } else {
+                    Toast.makeText(getContext(), "Không để trống bình luận", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+            return false;
+        });
+
+
         // Comment
         comments = new ArrayList<>();
         goodComments = new ArrayList<>();
         normalComments = new ArrayList<>();
         badComments = new ArrayList<>();
-        labelGood.setText("Good");
-        labelNormal.setText("Normal");
-        labelBad.setText("Bad");
+        labelGood.setText("Tốt");
+        labelNormal.setText("Bình thường");
+        labelBad.setText("Tệ");
 
         cmAdapter = new CommentApdapter(comments, getContext());
         recyclerView.setAdapter(cmAdapter);
@@ -156,14 +219,17 @@ public class RoomDetailFragment extends Fragment {
 
                 label.setSelected(true);
                 switch (label.getText().toString()){
-                    case "Good":
+                    case "Tốt":
                         cmAdapter.setComments(goodComments);
+                        cmAdapter.notifyDataSetChanged();
                         break;
-                    case "Normal":
+                    case "Bình thường":
                         cmAdapter.setComments(normalComments);
+                        cmAdapter.notifyDataSetChanged();
                         break;
-                    case "Bad":
+                    case "Tệ":
                         cmAdapter.setComments(badComments);
+                        cmAdapter.notifyDataSetChanged();
                         break;
                 }
             });
@@ -273,36 +339,48 @@ public class RoomDetailFragment extends Fragment {
         String roomTile = room.getTitle();
         String roomId = room.getId();
         new AlertDialog.Builder(getContext())
-                .setTitle("Confirm Deletion")
-                .setMessage("Do you want to remove the room " + roomTile + " from favorites?")
+                .setMessage("Bạn có muốn xóa phòng " + roomTile + " khỏi mục yêu thích không?")
                 .setPositiveButton("Yes", (dialog, which) -> {
                     FirebaseAuth auth = FirebaseAuth.getInstance();
                     repository.removeFromFavorites(roomId, auth.getCurrentUser().getUid(), null, null);
-                    Toast.makeText(getContext(), "Removed room " + room.getTitle() + " from favorites", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Xóa phòng " + room.getTitle() + " khỏi mục yêu thích.", Toast.LENGTH_SHORT).show();
                     room.setFavorite(false);
-                    addToFavoritesButton.setText("Add to favorites");
+                    addToFavoritesButton.setText("Thêm vào yêu thích");
+                })
+                .setNegativeButton("No", null)
+                .create().show();
+    }
+
+    private void showDialogSendComment(String rate, String comment){
+        new AlertDialog.Builder(getContext())
+                .setMessage("Bạn có muốn bình luận về phòng này không?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    repository.addComment(room.getId(), comment, rate, (cm) ->{
+                        loadCOmment();
+                    }, e ->{});
                 })
                 .setNegativeButton("No", null)
                 .create().show();
     }
 
     private void loadCOmment() {
+        goodComments.clear();
+        normalComments.clear();
+        badComments.clear();
+        comments.clear();
         repository.getCommentByRoomId(room.getId(), "good", (comment) -> {
             goodComments.addAll(comment);
             comments.addAll(comment);
-            comments.sort(Comparator.comparing(cm -> cm.getDate()));
             cmAdapter.notifyDataSetChanged();
         });
         repository.getCommentByRoomId(room.getId(), "normal", (comment) -> {
             normalComments.addAll(comment);
             comments.addAll(comment);
-            comments.sort(Comparator.comparing(cm -> cm.getDate()));
             cmAdapter.notifyDataSetChanged();
         });
         repository.getCommentByRoomId(room.getId(), "bad", (comment) -> {
             badComments.addAll(comment);
             comments.addAll(comment);
-            comments.sort(Comparator.comparing(cm -> cm.getDate()));
             cmAdapter.notifyDataSetChanged();
         });
     }
