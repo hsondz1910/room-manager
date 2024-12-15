@@ -9,6 +9,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -167,11 +168,17 @@ public class RoomRepository {
                     for (QueryDocumentSnapshot document : querySnapshot) {
                         String roomId = document.getId();
                         getRoomById(roomId, room -> {
-                            if (room.getId() == null) {
-                            }
                             if (room != null) {
-                                room.setFavorite(true);
-                                favoriteRooms.add(room);
+                                if (room.getId() == null) {
+                                }
+                                if (room != null) {
+                                    room.setFavorite(true);
+                                    favoriteRooms.add(room);
+                                }
+                            }else {
+                                Room r = new Room();
+                                r.setId(roomId);
+                                favoriteRooms.add(r);
                             }
 
                             if (roomsLoaded.incrementAndGet() == querySnapshot.size()) {
@@ -193,11 +200,19 @@ public class RoomRepository {
     }
 
     public void getRoomById(String roomId, OnSuccessListener<Room> onSuccess) {
-        db.collection("rooms").document(roomId).get().addOnSuccessListener(documentSnapshot -> {
-            Room room = documentSnapshot.toObject(Room.class);
-            room.setId(roomId);
-            onSuccess.onSuccess(room);
-        });
+        try{
+            db.collection("rooms").document(roomId).get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    Room room = documentSnapshot.toObject(Room.class);
+                    room.setId(roomId);
+                    onSuccess.onSuccess(room);
+                }else {
+                    onSuccess.onSuccess(null);
+                }
+            });
+        } catch (Exception e) {
+            onSuccess.onSuccess(null);
+        }
     }
 
     public void getNameByUserID(String userId, Consumer<String> callback) {
@@ -442,15 +457,21 @@ public class RoomRepository {
                                 }
                             }
                             // If messages are found, pass them to the success listener
-                            Log.d("TAG", "listenToMessages: " + messageList.size());
                             onSuccess.onSuccess(messageList);
                         } else {
                             // In case there's no data, pass an empty list or handle as needed
                             onSuccess.onSuccess(null);
                         }
+                    }else {
+                        onSuccess.onSuccess(new ArrayList<>());
                     }
 
                 });
+    }
+
+
+    public void removeChatRoom(String roomId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure){
+        db.collection("chatRooms").document(roomId).delete().addOnSuccessListener(onSuccess).addOnFailureListener(onFailure);
     }
 
 
