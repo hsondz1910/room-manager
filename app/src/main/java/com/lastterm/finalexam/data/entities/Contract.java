@@ -3,18 +3,27 @@ package com.lastterm.finalexam.data.entities;
 import java.util.Date;
 
 public class Contract {
-    private String contractId; // Contract ID
-    private String tenantId; // Tenant ID
-    private String ownerId; // Owner ID
-    private String roomId; // Room ID rented by tenant
-    private Date startDate; // Contract start date
-    private Date endDate; // Contract end date
-    private double rentAmount; // Rent amount
-    private boolean isActive; // Contract status (active or expired)
-    private String contractTerms; // Contract terms
+    private String contractId;
+    private String requestId;
+    private String tenantId;
+    private String ownerId;
+    private String roomId;
+    private Date startDate;
+    private Date endDate;
+    private double rentAmount;
+    private boolean isActive;
+    private String contractTerms;
     private boolean isSelected;
 
     public Contract() {}
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
 
     public String getContractId() {
         return contractId;

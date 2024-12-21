@@ -50,4 +50,5 @@
     <string name="area">Diện tích (m²)</string>
     <string name="select_image">Chọn hình ảnh</string>
     <string name="post">Đăng bài</string>
+    <string name="default_notification_channel_id">Thông báo</string>
 </resources>

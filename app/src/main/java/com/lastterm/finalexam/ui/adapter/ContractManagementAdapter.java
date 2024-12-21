@@ -6,13 +6,16 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -33,6 +36,7 @@ public class ContractManagementAdapter extends RecyclerView.Adapter<ContractMana
     public ContractManagementAdapter(List<Contract> contractList, Context context) {
         this.contractList = contractList;
         this.context = context;
+        this.db = FirebaseFirestore.getInstance();
     }
 
     @NonNull
@@ -65,7 +69,7 @@ public class ContractManagementAdapter extends RecyclerView.Adapter<ContractMana
                     holder.tvTenantName.setText("Người thuê nhà: Không có sẵn");
                 });
 
-        holder.tvRentAmount.setText("Tiền thuê: " + contract.getRentAmount() + "VNĐ");
+        holder.tvRentAmount.setText(String.format("Tiền thuê: %, .2f VNĐ", contract.getRentAmount()));
         holder.tvContractStatus.setText("Trạng thái: " + (contract.isActive() ? "Hoạt động" : "Hết hạn"));
 
         // Set up the popup menu
@@ -99,30 +103,93 @@ public class ContractManagementAdapter extends RecyclerView.Adapter<ContractMana
                 selectItem.setTitle(contract.isSelected() ? "Bỏ lựa chọn" : "Lựa chọn");
                 return true;
             } else if (id == R.id.action_edit) {
-                Toast.makeText(context, "Chỉnh sửa " + contract.getContractId(), Toast.LENGTH_SHORT).show();
+                showEditDialog(contract, holder.getAdapterPosition());
                 return true;
             } else if (id == R.id.action_delete) {
-                Toast.makeText(context, "Xóa bỏ " + contract.getContractId(), Toast.LENGTH_SHORT).show();
-
-                // Remove from list and notify adapter
-                contractList.remove(holder.getAdapterPosition());
-                notifyItemRemoved(holder.getAdapterPosition());
-                Log.d("ContractManagement", "Contract ID to delete: " + contract.getContractId());
-                // Delete from Firestore
-                db.collection("contracts").document(contract.getContractId())
-                        .delete()
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(context, "Hợp đồng đã bị xóa khỏi Firestore", Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(context, "Lỗi khi xóa hợp đồng khỏi Firestore", Toast.LENGTH_SHORT).show();
-                        });
+                deleteContract(contract, holder.getAdapterPosition());
                 return true;
             }
             return false;
         });
 
         popupMenu.show();
+    }
+
+    // Method to show dialog for editing contract
+    private void showEditDialog(Contract contract, int position) {
+        // Inflate custom dialog layout
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_contract, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(dialogView);
+
+        // Initialize dialog views
+        EditText rentAmountInput = dialogView.findViewById(R.id.editRentAmount);
+        CheckBox activeCheckbox = dialogView.findViewById(R.id.editActiveCheckbox);
+        Button saveButton = dialogView.findViewById(R.id.saveEditButton);
+
+        // Populate fields with current contract data
+        rentAmountInput.setText(String.valueOf(contract.getRentAmount()));
+        activeCheckbox.setChecked(contract.isActive());
+
+        // Set up dialog
+        builder.setCancelable(true);
+        AlertDialog dialog = builder.create();
+
+        saveButton.setOnClickListener(v -> {
+            String rentAmountStr = rentAmountInput.getText().toString();
+
+            if (rentAmountStr.isEmpty()) {
+                Toast.makeText(context, "Vui lòng nhập số tiền thuê.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            double newRentAmount = Double.parseDouble(rentAmountStr);
+            boolean newActiveStatus = activeCheckbox.isChecked();
+
+            // Ensure db is initialized
+            if (db == null) {
+                db = FirebaseFirestore.getInstance();
+            }
+
+            // Update contract object
+            contract.setRentAmount(newRentAmount);
+            contract.setActive(newActiveStatus);
+
+            // Update Firestore
+            db.collection("contracts").document(contract.getContractId())
+                    .update("rentAmount", newRentAmount, "active", newActiveStatus)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(context, "Hợp đồng đã được cập nhật.", Toast.LENGTH_SHORT).show();
+                        notifyItemChanged(position); // Refresh the updated item
+                        dialog.dismiss();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(context, "Lỗi khi cập nhật hợp đồng.", Toast.LENGTH_SHORT).show();
+                        Log.e("ContractManagement", "Error updating contract: " + e.getMessage(), e);
+                    });
+        });
+
+        dialog.show();
+    }
+
+    // Method to delete contract
+    private void deleteContract(Contract contract, int position) {
+        Toast.makeText(context, "Xóa bỏ " + contract.getContractId(), Toast.LENGTH_SHORT).show();
+
+        // Remove from list and notify adapter
+        contractList.remove(position);
+        notifyItemRemoved(position);
+        Log.d("ContractManagement", "Contract ID to delete: " + contract.getContractId());
+
+        // Delete from Firestore
+        db.collection("contracts").document(contract.getContractId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(context, "Hợp đồng đã bị xóa khỏi Firestore", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Lỗi khi xóa hợp đồng khỏi Firestore", Toast.LENGTH_SHORT).show();
+                });
     }
 
     @Override

@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.lastterm.finalexam"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -27,8 +27,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 }
 
@@ -40,18 +40,19 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.storage)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
     // Firebase libraries used in the project
+    implementation(libs.google.firebase.analytics)
     implementation(libs.google.firebase.auth)
     implementation(libs.google.firebase.firestore)
     implementation(libs.google.firebase.storage)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
 
-    // Các thư viện khác của dự án
+    // Other libraries of the project
     implementation(libs.fragment)
     implementation(libs.circleimageview)
     implementation(libs.material)

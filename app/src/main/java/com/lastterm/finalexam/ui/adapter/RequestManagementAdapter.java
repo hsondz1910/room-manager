@@ -14,11 +14,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.Contract;
 import com.lastterm.finalexam.data.entities.DepositRequest;
+import com.lastterm.finalexam.data.repositories.RequestRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -45,108 +47,76 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
 
     @Override
     public void onBindViewHolder(@NonNull RequestViewHolder holder, int position) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        RequestRepository repository = new RequestRepository();
         DepositRequest request = depositRequestsList.get(position);
 
-        // Bind data to UI elements
-        db.collection("rooms")
-                .document(request.getRoomId())
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String roomTitle = documentSnapshot.getString("title");
-                        holder.roomTitle.setText("Tên phòng: " + (roomTitle != null ? roomTitle : "Không có sẵn"));
-                    } else {
-                        holder.roomTitle.setText("Tên phòng: Không có sẵn");
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    holder.roomTitle.setText("Tên phòng: Không có sẵn");
-                });
+        // Fetch room title
+        repository.fetchRoomTitle(request.getRoomId(), new RequestRepository.RoomCallback() {
+            @Override
+            public void onSuccess(String roomTitle) {
+                holder.roomTitle.setText(roomTitle != null ? roomTitle : "Tên phòng: Không có sẵn");
+            }
 
-        holder.depositAmount.setText("Số tiền gửi: " + request.getDepositAmount() + "VNĐ");
+            @Override
+            public void onError(String errorMessage) {
+                holder.roomTitle.setText("Tên phòng: Không có sẵn");
+            }
+        });
 
-        db.collection("users")
-                .document(request.getUserId())
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String userName = documentSnapshot.getString("username");
-                        holder.userName.setText("Người dùng: " + (userName != null ? userName : "Không xác định"));
-                    } else {
-                        holder.userName.setText("Người dùng: Không xác định");
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    holder.userName.setText("Người dùng: Không xác định");
-                });
+        // Fetch user name
+        repository.fetchUserName(request.getUserId(), new RequestRepository.UserCallback() {
+            @Override
+            public void onSuccess(String userName) {
+                holder.userName.setText("Người dùng: " + (userName != null ? userName : "Không xác định"));
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                holder.userName.setText("Người dùng: Không xác định");
+            }
+        });
+
+        holder.depositAmount.setText("Số tiền gửi: " + String.format("%,.2f VNĐ", request.getDepositAmount()));
+        holder.roomStatus.setText("Trạng thái yêu cầu: " + getStatusInVietnamese(request.getStatus()));
 
         // Load room image using Glide
         if (request.getRoomImageUrls() != null && !request.getRoomImageUrls().isEmpty()) {
             String imageUrl = request.getRoomImageUrls().get(0);
-            Glide.with(holder.roomImage.getContext())
+            Glide.with(context)
                     .load(imageUrl)
                     .placeholder(R.drawable.placeholder_img)
                     .error(R.drawable.error_image)
                     .into(holder.roomImage);
-        } else {
-            holder.roomImage.setImageResource(R.drawable.placeholder_img);
         }
 
-        // Convert status to Vietnamese and display it
-        String statusInVietnamese = getStatusInVietnamese(request.getStatus());
-        holder.roomStatus.setText("Trạng thái: " + statusInVietnamese);
-
-        // Handle reject button click
+        // Update status on reject
         holder.rejectButton.setOnClickListener(v -> {
-
-            db.collection("depositRequests")
-                    .document(request.getRequestId())
-                    .update("status", "rejected")
-                    .addOnSuccessListener(aVoid -> {
-                        // Display a message to the user
+            int currentPosition = holder.getAdapterPosition();
+            if (currentPosition != RecyclerView.NO_POSITION) {
+                repository.updateRequestStatus(request.getRequestId(), "rejected", new RequestRepository.UpdateCallback() {
+                    @Override
+                    public void onSuccess() {
                         Toast.makeText(context, "Yêu cầu đã bị từ chối.", Toast.LENGTH_SHORT).show();
-
-                        // Update the request status in the list
                         request.setStatus("rejected");
+                        notifyItemChanged(currentPosition); // Update UI
+                    }
 
-                        // Disable the button and update the interface immediately
-                        holder.createContractButton.setEnabled(false);
-                        holder.createContractButton.setAlpha(0.5f);
-                        holder.rejectButton.setEnabled(false);
-                        holder.rejectButton.setAlpha(0.5f);
-                        holder.roomStatus.setText("Trạng thái: Đã bị từ chối");
-
-                        // Notify the adapter that the data has changed to reflect the updated status
-                        notifyItemChanged(position); // This updates only the current item in the list
-                    })
-                    .addOnFailureListener(e -> {
-                        // Catch errors and display messages
-                        e.printStackTrace(); // Detailed error log
-                        Toast.makeText(context, "Lỗi khi từ chối yêu cầu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+                    @Override
+                    public void onError(String errorMessage) {
+                        Toast.makeText(context, "Lỗi khi từ chối yêu cầu: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         });
-
-        // Disable buttons based on the status
-        if ("approved".equals(request.getStatus()) || "contract_created".equals(request.getStatus()) || "rejected".equals(request.getStatus())) {
-            holder.createContractButton.setEnabled(false);
-            holder.createContractButton.setAlpha(0.5f); // Optional: Dim the button
-            holder.rejectButton.setEnabled(false);
-            holder.rejectButton.setAlpha(0.5f); // Optional: Dim the button
-        } else {
-            holder.createContractButton.setEnabled(true);
-            holder.createContractButton.setAlpha(1.0f);
-            holder.rejectButton.setEnabled(true);
-            holder.rejectButton.setAlpha(1.0f);
-        }
 
         // Handle create contract button click
         holder.createContractButton.setOnClickListener(v -> {
-            // Show the dialog to create contract
-            showCreateContractDialog(request);
+            int currentPosition = holder.getAdapterPosition();
+            if (currentPosition != RecyclerView.NO_POSITION) {
+                showCreateContractDialog(request);
+            }
         });
     }
-
 
     private String getStatusInVietnamese(String status) {
         switch (status) {
@@ -211,6 +181,7 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
             // Create the contract object
             Contract contract = new Contract();
             contract.setContractId(UUID.randomUUID().toString()); // generate unique contract ID
+            contract.setRequestId(request.getRequestId());
             contract.setTenantId(request.getUserId());
             contract.setOwnerId(request.getOwnerId());
             contract.setRoomId(request.getRoomId());
@@ -226,11 +197,20 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
             db.collection("contracts").document(contract.getContractId())
                     .set(contract)
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(context, "Hợp đồng đã được tạo thành công.", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
+                        db.collection("depositRequests").document(request.getRequestId())
+                                .update("status", "contract_created")
+                                .addOnSuccessListener(updateVoid -> {
+                                    Toast.makeText(context, "Hợp đồng đã được tạo thành công.", Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(context, "Hợp đồng được tạo nhưng không thể cập nhật yêu cầu.", Toast.LENGTH_SHORT).show();
+                                    Log.e("Contract", "Lỗi khi cập nhật yêu cầu gửi tiền: " + e.getMessage(), e);
+                                });
                     })
                     .addOnFailureListener(e -> {
                         Toast.makeText(context, "Lỗi khi tạo hợp đồng.", Toast.LENGTH_SHORT).show();
+                        Log.e("Contract", "Lỗi khi tạo hợp đồng: " + e.getMessage(), e);
                     });
         });
 

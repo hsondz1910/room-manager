@@ -100,12 +100,12 @@ public class RoomDetailFragment extends Fragment {
         repository = new RoomRepository();
 
         roomTitleTextView.setText(room.getTitle());
-        roomPriceTextView.setText("Price: " + String.format("%,.2f VND", room.getPrice()));
-        roomAreaTextView.setText("Area: " + room.getAddress());
+        roomPriceTextView.setText("Giá: " + String.format("%,.2f VND", room.getPrice()));
+        roomAreaTextView.setText("Khu vực: " + room.getAddress());
         roomDescriptionTextView.setText(room.getDescription());
 
         if (room.isFavorite()) {
-            addToFavoritesButton.setText("Remove from favorites");
+            addToFavoritesButton.setText("Xóa khỏi mục yêu thích");
             addToFavoritesButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -115,7 +115,7 @@ public class RoomDetailFragment extends Fragment {
 
         }
         else {
-            addToFavoritesButton.setText("Add to favorites");
+            addToFavoritesButton.setText("Thêm vào mục yêu thích");
             addToFavoritesButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -124,12 +124,12 @@ public class RoomDetailFragment extends Fragment {
 
                     roomRepository.addToFavorites(room.getId(),auth.getCurrentUser().getUid(), (s) -> {
                         if (s) {
-                            Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Đã thêm vào mục yêu thích", Toast.LENGTH_SHORT).show();
                         }
                     }, (e) -> {
                         Log.d("fail: ", e.getMessage());});
                     room.setFavorite(true);
-                    addToFavoritesButton.setText("Remove from favorites");
+                    addToFavoritesButton.setText("Xóa khỏi mục yêu thích");
                 }
             });
         }
@@ -308,30 +308,38 @@ public class RoomDetailFragment extends Fragment {
         String roomId = room.getId();
         String ownerId = room.getOwnerId(); // Room owner's ID
 
-        // Create deposit request to send to Firestore
+        // Create a map to store DepositRequest information
         Map<String, Object> depositRequest = new HashMap<>();
         depositRequest.put("userId", userId);
         depositRequest.put("roomId", roomId);
         depositRequest.put("depositAmount", depositAmount);
-        depositRequest.put("status", "pending"); // Status: awaiting approval
+        depositRequest.put("status", "pending"); // Status: pending approval
         depositRequest.put("timestamp", System.currentTimeMillis());
-        depositRequest.put("ownerId", ownerId); // Room owner's ID
+        depositRequest.put("ownerId", ownerId);
 
-        // Get the list of room image URLs (take all images in the room)
-        List<String> roomImageUrls = room.getImgUrls(); // Ensure that you have `imgUrls` property in `Room`
-
+        List<String> roomImageUrls = room.getImgUrls();
         if (roomImageUrls != null && !roomImageUrls.isEmpty()) {
-            depositRequest.put("roomImageUrls", roomImageUrls); // Save image list into the request
+            depositRequest.put("roomImageUrls", roomImageUrls);
         }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("depositRequests")
                 .add(depositRequest)
                 .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(getContext(), "Deposit successful! Waiting for host approval.", Toast.LENGTH_SHORT).show();
+                    String requestId = documentReference.getId();
+                    documentReference.update("requestId", requestId)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(getContext(), "Đã gửi tiền thành công! Đang chờ chủ nhà chấp thuận.", Toast.LENGTH_SHORT).show();
+                                Log.d("DepositRequest", "Yêu cầu ID đã được cập nhật thành công: " + requestId);
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getContext(), "Lỗi khi cập nhật requestId.", Toast.LENGTH_SHORT).show();
+                                Log.e("DepositRequest", "Lỗi khi cập nhật requestId: " + e.getMessage(), e);
+                            });
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "Error sending deposit request.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Có lỗi khi gửi yêu cầu gửi tiền.", Toast.LENGTH_SHORT).show();
+                    Log.e("DepositRequest", "Lỗi khi tạo yêu cầu gửi tiền: " + e.getMessage(), e);
                 });
     }
 

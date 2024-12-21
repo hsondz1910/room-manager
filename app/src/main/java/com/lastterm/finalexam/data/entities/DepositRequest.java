@@ -3,26 +3,16 @@ package com.lastterm.finalexam.data.entities;
 import java.util.List;
 
 public class DepositRequest {
-    private String requestId; // ID of the deposit request
-    private String userId; // ID of the user
-    private String roomId; // ID of the room
-    private double depositAmount; // Deposit amount
+    private String requestId;
+    private String userId;
+    private String roomId;
+    private double depositAmount;
     private String status; // Status of the request (pending, approved, rejected)
-    private long timestamp; // Time the request was created
-    private String ownerId; // ID of the room owner
+    private long timestamp;
+    private String ownerId;
     private List<String> roomImageUrls;
 
     public DepositRequest() {}
-
-    public DepositRequest(String requestId, String userId, String roomId, double depositAmount, String status, long timestamp, String ownerId) {
-        this.requestId = requestId;
-        this.userId = userId;
-        this.roomId = roomId;
-        this.depositAmount = depositAmount;
-        this.status = status;
-        this.timestamp = timestamp;
-        this.ownerId = ownerId;
-    }
 
     public String getRequestId() {
         return requestId;

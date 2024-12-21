@@ -41,29 +41,11 @@ public class ContractRepository {
                 });
     }
 
-    // Add a new contract to Firestore
-    public void addContract(Contract contract, final Callback callback) {
-        contractsRef.add(contract)
-                .addOnSuccessListener(documentReference -> {
-                    contract.setContractId(documentReference.getId());
-                    callback.onSuccess(List.of(contract));
-                })
-                .addOnFailureListener(e -> callback.onError("Error adding contract: " + e.getMessage()));
-    }
-
     // Delete a contract from Firestore
     public void deleteContract(String contractId, final Callback callback) {
         contractsRef.document(contractId).delete()
                 .addOnSuccessListener(aVoid -> callback.onSuccess(null))
                 .addOnFailureListener(e -> callback.onError("Error deleting contract: " + e.getMessage()));
-    }
-
-    // Delete multiple selected contracts
-    public void deleteContracts(List<String> contractIds, final Callback callback) {
-        for (String contractId : contractIds) {
-            contractsRef.document(contractId).delete();
-        }
-        callback.onSuccess(null);
     }
 
     // Interface for callback handling success and error

@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.repositories.ContractRepository;
 import com.lastterm.finalexam.ui.adapter.ContractManagementAdapter;

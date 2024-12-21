@@ -54,6 +54,7 @@
                 android:id="@+id/createContractButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="5sp"
                 android:backgroundTint="#4CAF50"
                 android:text="@string/create_contract" />
 
@@ -61,6 +62,7 @@
                 android:id="@+id/rejectButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="5sp"
                 android:backgroundTint="#E91E63"
                 android:text="@string/reject" />
         </LinearLayout>
