@@ -11,4 +11,7 @@
     <color name="sender">#9BFF8B</color>
     <color name="button_background">#6200EE</color>
     <color name="primary">#6200EE</color>
+    <color name="appointment_not_comf">#F8EC95</color>
+    <color name="appointment_comf">#B6FD83</color>
+    <color name="appointment_not_accept">#FB919B</color>
 </resources>

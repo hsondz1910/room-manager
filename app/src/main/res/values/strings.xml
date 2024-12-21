@@ -9,7 +9,8 @@
     <string name="favorite_item_image">Ảnh yêu thích</string>
     <string name="search">Tìm kiếm</string>
     <string name="favorites">Mục yêu thích</string>
-    <string name="contact">Liên hệ</string>>
+    <string name="contact">Liên hệ</string>
+    <string name="appointment">Lịch hẹn</string>
     <string name="profile">Hồ sơ</string>
     <string name="login_title">Đăng Nhập</string>
     <string name="email_hint">Email</string>

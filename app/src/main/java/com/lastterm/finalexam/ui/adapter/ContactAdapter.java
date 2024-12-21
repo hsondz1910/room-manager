@@ -91,7 +91,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
         holder.itemView.setOnClickListener(v -> {
             repository.isContainRoom(chatRoom.getRoomId(), (isContain) -> {
                 if(isContain){
-                    Fragment fragment = new ChatRoomFragment(chatRoom.getRoomId(),chatRoom.getUsers().get(0), chatRoom.getUsers().get(1));
+                    Fragment fragment = new ChatRoomFragment(chatRoom);
                     AppCompatActivity activity = (AppCompatActivity) v.getContext();
                     activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
                 }

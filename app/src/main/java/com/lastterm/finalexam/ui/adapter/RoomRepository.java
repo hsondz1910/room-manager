@@ -1,4 +1,4 @@
-package com.lastterm.finalexam.data.repositories;
+package com.lastterm.finalexam.ui.adapter;
 
 import android.content.Context;
 import android.net.Uri;
@@ -9,7 +9,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -20,13 +19,18 @@ import com.google.firebase.storage.StorageReference;
 import com.lastterm.finalexam.data.entities.Appointment;
 import com.lastterm.finalexam.data.entities.ChatRoom;
 import com.lastterm.finalexam.data.entities.MessageClass;
-import com.lastterm.finalexam.data.entities.RoomFilter;
 import com.lastterm.finalexam.data.entities.Room;
+import com.lastterm.finalexam.data.entities.RoomFilter;
 import com.lastterm.finalexam.data.entities.uComment;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,13 +38,14 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import okhttp3.*;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class RoomRepository {
     private FirebaseFirestore db;
@@ -324,7 +329,7 @@ public class RoomRepository {
         return auth.getUid();
     }
 
-    public void creatChatRoom(String roomID,String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure) {
+    public void createChatRoom(String roomID,String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure) {
         ChatRoom chatRoom = new ChatRoom(roomID, userIDSent, userIDReceiver);
         try {
             db.collection("chatRooms").add(chatRoom).addOnSuccessListener(documentReference -> {
@@ -603,6 +608,7 @@ public class RoomRepository {
         }
         return byteArrayOutputStream.toByteArray();
     }
+
     public void getAppointment(String chatRoomID, OnSuccessListener<ArrayList<Appointment>> onSuccess) {
         Log.d("TAG", "getAppointment: " + chatRoomID);
         db.collection("appointments")

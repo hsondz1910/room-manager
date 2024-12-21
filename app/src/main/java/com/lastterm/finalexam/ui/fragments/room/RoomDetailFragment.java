@@ -240,13 +240,15 @@ public class RoomDetailFragment extends Fragment {
         contactButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment defaultFragment = new ChatRoomFragment(room.getId(),repository.getCurrentUser(), room.getOwnerId());
-                if (defaultFragment != null) {
-                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.fragment_container, defaultFragment);
-                    transaction.addToBackStack(null);
-                    transaction.commit();
-                }
+                repository.creatChatRoom(room.getId(),repository.getCurrentUser(), room.getOwnerId(), (room) -> {
+                    Fragment defaultFragment = new ChatRoomFragment(room);
+                    if (defaultFragment != null) {
+                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment_container, defaultFragment);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                    }
+                }, e -> {});
             }
         });
 

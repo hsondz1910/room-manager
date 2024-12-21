@@ -14,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.lastterm.finalexam.ui.fragments.appointment.AppointmentFrament;
 import com.lastterm.finalexam.ui.fragments.contract.ContractManagementFragment;
 import com.lastterm.finalexam.ui.fragments.contact.ContactFrament;
 import com.lastterm.finalexam.ui.fragments.home.AdminHomeFragment;
@@ -109,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment = new FavoritesFragment();
                 }else if (item.getItemId() == R.id.nav_contact) {
                     selectedFragment = new ContactFrament("tenant");
+                }else if (item.getItemId() == R.id.nav_appointment) {
+                    selectedFragment = new AppointmentFrament("tenant");
                 }else if (item.getItemId() == R.id.nav_setting) {
                     selectedFragment = new SettingFragment();
                 }

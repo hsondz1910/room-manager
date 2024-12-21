@@ -39,7 +39,6 @@
         android:padding="7dp"
         android:text="Message Content"
         android:textColor="@color/black"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/name_mes_sent"
         app:layout_constraintTop_toBottomOf="@+id/sent_image" />
 
