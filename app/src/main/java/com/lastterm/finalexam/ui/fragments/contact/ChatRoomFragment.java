@@ -129,8 +129,16 @@ public class ChatRoomFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         if(!chatRoom.getUsers().contains("Support")) {
-            inflater.inflate(R.menu.menu_chat_room, menu);
-            menu.findItem(R.id.dialog_create_appointment).setVisible(true);
+            repository.getRoomById(chatRoom.getRoomId(), (room) -> {
+                if (room == null)
+                {
+                    inflater.inflate(R.menu.menu_chat_room, menu);
+                    menu.findItem(R.id.dialog_create_appointment).setVisible(false);
+                }else {
+                    inflater.inflate(R.menu.menu_chat_room, menu);
+                    menu.findItem(R.id.dialog_create_appointment).setVisible(true);
+                }
+            });
         }else {
             inflater.inflate(R.menu.menu_chat_room, menu);
             menu.findItem(R.id.dialog_create_appointment).setVisible(false);
@@ -178,7 +186,11 @@ public class ChatRoomFragment extends Fragment {
         textMsg.setHint("Nhập tin nhắn của bạn...");
         if(!chatRoom.getUsers().contains("Support")) {
             repository.getRoomById(chatRoom.getRoomId(), (room) -> {
-                if (room == null) btnSent.setEnabled(false);
+                if (room == null)
+                {
+                    btnSent.setEnabled(false);
+                }
+
             });
         }
 
@@ -288,13 +300,22 @@ public class ChatRoomFragment extends Fragment {
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Lịch hẹn:")
-                .setView(layout)
-                .setPositiveButton("Thêm cuộc hẹn", (dialog, which) -> {
-                    showDialogCreateAppointment();
-                })
-                .setNegativeButton("Thoát", (dialog, which) -> dialog.dismiss());
-        builder.show();
+        if(role.equals("tenant")){
+            builder.setTitle("Lịch hẹn:")
+                    .setView(layout)
+                    .setPositiveButton("Thêm cuộc hẹn", (dialog, which) -> {
+                        showDialogCreateAppointment();
+                    })
+                    .setNegativeButton("Thoát", (dialog, which) -> dialog.dismiss());
+            builder.show();
+        }
+        if(role.equals("owner")){
+            builder.setTitle("Lịch hẹn:")
+                    .setView(layout)
+                    .setNegativeButton("Thoát", (dialog, which) -> dialog.dismiss());
+            builder.show();
+        }
+
     }
 
     private void showDialogCreateAppointment(){

@@ -21,12 +21,6 @@
         android:title="@string/contact" />
 
     <item
-        android:id="@+id/nav_appointment"
-        android:icon="@drawable/baseline_edit_calendar_24_black"
-        android:title="@string/appointment" />
-
-
-    <item
         android:id="@+id/nav_setting"
         android:icon="@drawable/ic_menu_settings"
         android:title="@string/settings" />

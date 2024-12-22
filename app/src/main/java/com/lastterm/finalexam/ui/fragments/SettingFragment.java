@@ -22,11 +22,12 @@ import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
 import com.lastterm.finalexam.ui.account.EditProfileFragment;
 import com.lastterm.finalexam.ui.account.LoginActivity;
+import com.lastterm.finalexam.ui.fragments.appointment.AppointmentFrament;
 import com.lastterm.finalexam.ui.fragments.contact.ChatRoomFragment;
 
 public class SettingFragment extends Fragment {
     private TextView tvUsername, tvEmail, tvPhone, tvRole;
-    private Button btnLogout, btnEditProfile, btnSupport;
+    private Button btnLogout, btnEditProfile, btnSupport, btnAppointment;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private ImageView img;
@@ -48,6 +49,7 @@ public class SettingFragment extends Fragment {
         btnLogout = view.findViewById(R.id.btnLogout);
         btnEditProfile = view.findViewById(R.id.btnEditProfile);
         btnSupport = view.findViewById(R.id.btnSupport);
+        btnAppointment = view.findViewById(R.id.btnAppointment);
         img = view.findViewById(R.id.profileImage);
 
         String userId = mAuth.getCurrentUser().getUid();
@@ -77,6 +79,14 @@ public class SettingFragment extends Fragment {
                         }
                     }, e -> {});
                 });
+
+                btnAppointment.setOnClickListener(v -> {
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, new AppointmentFrament(documentSnapshot.getString("role")))
+                            .addToBackStack(null)
+                            .commit();
+                });
             }
         }).addOnFailureListener(e ->
                 Toast.makeText(getActivity(), "Failed to load user data", Toast.LENGTH_SHORT).show()
@@ -97,6 +107,8 @@ public class SettingFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+
+
 
 
 

@@ -472,7 +472,6 @@ public class RoomRepository {
                 .get()
                 .addOnCompleteListener(res-> {
                     if (res.isSuccessful()) {
-                        Log.d("TAG", "findChatRoomWithAdmin: " + res.getResult().size());
                         if(!res.getResult().isEmpty()){
                             for (QueryDocumentSnapshot doc : res.getResult()) {
                                 ChatRoom chatRoom = doc.toObject(ChatRoom.class);
