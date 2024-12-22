@@ -52,4 +52,6 @@
     <string name="select_image">Chọn hình ảnh</string>
     <string name="post">Đăng bài</string>
     <string name="default_notification_channel_id">Thông báo</string>
+    <string name="accept">Chấp nhận</string>
+    <string name="deny">Từ chối</string>
 </resources>

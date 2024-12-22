@@ -615,6 +615,7 @@ public class RoomRepository {
                             ArrayList<Appointment> appointments = new ArrayList<>();
                             for (DocumentSnapshot document : doc.getDocuments()) {
                                 Appointment appointment = document.toObject(Appointment.class);
+                                appointment.setId(document.getId());
                                 appointments.add(appointment);
                             }
                             onSuccess.onSuccess(appointments);
@@ -647,6 +648,7 @@ public class RoomRepository {
                                     if (taskSnapshot.isSuccessful() && !taskSnapshot.getResult().isEmpty()) {
                                         for (DocumentSnapshot document : taskSnapshot.getResult()) {
                                             Appointment appointment = document.toObject(Appointment.class);
+                                            appointment.setId(document.getId());
                                             appointments.add(appointment);
                                         }
                                     }
@@ -665,5 +667,16 @@ public class RoomRepository {
         } catch (Exception e) {
             Log.d("Firestore", "Error: " + e.getMessage());
         }
+    }
+
+    public void updateAppointment(Appointment appointment, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        db.collection("appointments").document(appointment.getId()).set(appointment.toMap())
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+    public void deleteAppointment(Appointment appointment, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        db.collection("appointments").document(appointment.getId()).delete()
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
     }
 }

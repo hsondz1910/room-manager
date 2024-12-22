@@ -89,7 +89,7 @@ public class Appointment {
         result.put("description", description);
         result.put("date", Date);
         result.put("time", time);
-        result.put("caledarID", caledarID);
+        result.put("status", status);
         return result;
     }
 

@@ -20,6 +20,11 @@
         android:icon="@drawable/outline_message_24"
         android:title="@string/contact" />
 
+    <item
+        android:id="@+id/nav_appointment"
+        android:icon="@drawable/baseline_edit_calendar_24_black"
+        android:title="@string/appointment" />
+
 
     <item
         android:id="@+id/nav_setting"

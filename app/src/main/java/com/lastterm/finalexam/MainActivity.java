@@ -123,8 +123,10 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment = new ContractManagementFragment();
                 } else if (item.getItemId() == R.id.nav_request_management) {
                     selectedFragment = new RequestManagementFragment();
-                }else if (item.getItemId() == R.id.nav_contact) {
+                } else if (item.getItemId() == R.id.nav_contact) {
                     selectedFragment = new ContactFrament("owner");
+                } else if (item.getItemId() == R.id.nav_appointment) {
+                    selectedFragment = new AppointmentFrament("owner");
                 } else if (item.getItemId() == R.id.nav_setting) {
                     selectedFragment = new SettingFragment();
                 }

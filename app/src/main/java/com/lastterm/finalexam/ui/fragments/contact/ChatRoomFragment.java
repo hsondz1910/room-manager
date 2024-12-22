@@ -78,11 +78,13 @@ public class ChatRoomFragment extends Fragment {
     private ArrayList<Appointment> appointments;
 
     private String name;
+    private String role;
 
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
-    public ChatRoomFragment(ChatRoom chatRoom) {
+    public ChatRoomFragment(String role, ChatRoom chatRoom) {
         this.chatRoom = chatRoom;
+        this.role = role;
     }
 
     @Override
@@ -254,7 +256,7 @@ public class ChatRoomFragment extends Fragment {
 
         RecyclerView recyclerView = new RecyclerView(requireContext());
 
-        AppointmentAdapter adapter = new AppointmentAdapter(getContext(), appointments);
+        AppointmentAdapter adapter = new AppointmentAdapter(getContext(), role, appointments);
         Log.d("show", "show " + adapter.getItemCount());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
@@ -323,8 +325,15 @@ public class ChatRoomFragment extends Fragment {
                                 time.getText().toString(),
                                 "",
                                 0);
-                        appointment.setCaledarID(checkPerMission(appointment));
+                        checkPerMission(appointment);
                         repository.addAppointment(appointment,(s) -> {
+                            String msg = "Hẹn xem phòng vào lúc " + date.getText().toString() + " " + time.getText().toString();
+                            repository.sendMessage(getContext(), chatRoom.getId(), msg, selectedImageUri, (message) -> {
+                                textMsg.setText("");
+                                selectedImageUri = null;
+                                imagePreview.setVisibility(View.GONE);
+                                btnSent.setEnabled(true);
+                            }, (e) -> {btnSent.setEnabled(true);});
                             Toast.makeText(getContext(),"Đã thêm vào lịch.", Toast.LENGTH_SHORT).show();
                         }, (e) -> {
                             Toast.makeText(getContext(),"Lỗi khi thêm vào lịch.", Toast.LENGTH_SHORT).show();

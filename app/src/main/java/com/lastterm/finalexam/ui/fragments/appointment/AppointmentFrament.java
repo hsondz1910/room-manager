@@ -55,7 +55,7 @@ public class AppointmentFrament extends Fragment {
                 appointments.clear();
                 appointments.addAll(res);
                 sortAppointmentsByDate(appointments);
-                adapter = new AppointmentAdapter(getContext(), appointments);
+                adapter = new AppointmentAdapter(getContext(), role, appointments);
                 ap_recylerview.setAdapter(adapter);
             }
         }, error -> {});
@@ -67,7 +67,6 @@ public class AppointmentFrament extends Fragment {
             @Override
             public int compare(Appointment app1, Appointment app2) {
                 try {
-                    // Chuyển đổi chuỗi ngày thành đối tượng Date để so sánh
                     return dateFormat.parse(app2.getDate()).compareTo(dateFormat.parse(app1.getDate()));
                 } catch (Exception e) {
                     e.printStackTrace();

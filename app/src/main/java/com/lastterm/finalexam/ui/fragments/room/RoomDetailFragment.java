@@ -241,7 +241,7 @@ public class RoomDetailFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 repository.creatChatRoom(room.getId(),repository.getCurrentUser(), room.getOwnerId(), (room) -> {
-                    Fragment defaultFragment = new ChatRoomFragment(room);
+                    Fragment defaultFragment = new ChatRoomFragment("tenant",room);
                     if (defaultFragment != null) {
                         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.fragment_container, defaultFragment);
