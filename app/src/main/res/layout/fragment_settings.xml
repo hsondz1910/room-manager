@@ -97,6 +97,13 @@
         android:text="Edit Profile" />
 
     <Button
+        android:id="@+id/btnSupport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Support" />
+
+    <Button
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

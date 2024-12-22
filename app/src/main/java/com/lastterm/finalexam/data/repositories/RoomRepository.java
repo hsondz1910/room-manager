@@ -426,8 +426,10 @@ public class RoomRepository {
                     List<ChatRoom> chatRooms = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : snapshot.getResult()) {
                         ChatRoom chatRoom = doc.toObject(ChatRoom.class);
-                        chatRoom.setId(doc.getId());
-                        chatRooms.add(chatRoom);
+                        if(!chatRoom.getUsers().contains("Support")){
+                            chatRoom.setId(doc.getId());
+                            chatRooms.add(chatRoom);
+                        }
                     }
                     onSuccess.onSuccess(chatRooms);
                 }
@@ -464,8 +466,29 @@ public class RoomRepository {
         }
     }
 
+    public void findChatRoomWithAdmin(String userID, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure){
+        db.collection("chatRooms")
+                .whereArrayContains("users", userID)
+                .get()
+                .addOnCompleteListener(res-> {
+                    if (res.isSuccessful()) {
+                        Log.d("TAG", "findChatRoomWithAdmin: " + res.getResult().size());
+                        if(!res.getResult().isEmpty()){
+                            for (QueryDocumentSnapshot doc : res.getResult()) {
+                                ChatRoom chatRoom = doc.toObject(ChatRoom.class);
+                                if(chatRoom.getUsers().contains("Support")){
+                                    chatRoom.setId(doc.getId());
+                                    onSuccess.onSuccess(chatRoom);
+                                    return;
+                                }
+                            }
+                        }
+                        creatChatRoom("Support", userID, "Support", r->onSuccess.onSuccess(r), onFailure);
+                    }
+                });
+    }
+
     public void setMessagesRead(String roomId, String senderID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        Log.d("TAG", "setMessagesRead: " + senderID);
         db.collection("chatRooms")
                 .document(roomId)
                 .collection("messages")

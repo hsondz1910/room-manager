@@ -94,18 +94,31 @@ public class ChatRoomFragment extends Fragment {
         toolbarTitle = view.findViewById(R.id.toolbar_title);
         AppCompatActivity activity = (AppCompatActivity) requireActivity();
         activity.setSupportActionBar(toolbar);
-        if(chatRoom.getUsers().get(0).equals(repository.getCurrentUser())){
-            repository.getNameByUserID(chatRoom.getUsers().get(1), (name) -> {
-                toolbarTitle.setText(name);
-                this.name = name;
-            });
 
+        if(chatRoom.getUsers().contains("Support") && !role.equals("admin")){
+            toolbarTitle.setText("Hỗ trợ");
         }else {
-            repository.getNameByUserID(chatRoom.getUsers().get(0), (name) -> {
-                toolbarTitle.setText(name);
-                this.name = name;
-            });
+            if(role.equals("admin")){
+                repository.getNameByUserID(chatRoom.getUsers().get(0), (name) -> {
+                    toolbarTitle.setText(name);
+                    this.name = name;
+                });
+            }else {
+                if(chatRoom.getUsers().get(0).equals(repository.getCurrentUser())){
+                    repository.getNameByUserID(chatRoom.getUsers().get(1), (name) -> {
+                        toolbarTitle.setText(name);
+                        this.name = name;
+                    });
+
+                }else {
+                    repository.getNameByUserID(chatRoom.getUsers().get(0), (name) -> {
+                        toolbarTitle.setText(name);
+                        this.name = name;
+                    });
+                }
+            }
         }
+
 
         if (activity.getSupportActionBar() != null) {
             activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -115,7 +128,13 @@ public class ChatRoomFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_chat_room, menu);
+        if(!chatRoom.getUsers().contains("Support")) {
+            inflater.inflate(R.menu.menu_chat_room, menu);
+            menu.findItem(R.id.dialog_create_appointment).setVisible(true);
+        }else {
+            inflater.inflate(R.menu.menu_chat_room, menu);
+            menu.findItem(R.id.dialog_create_appointment).setVisible(false);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -157,12 +176,16 @@ public class ChatRoomFragment extends Fragment {
 
 
         textMsg.setHint("Nhập tin nhắn của bạn...");
+        if(!chatRoom.getUsers().contains("Support")) {
+            repository.getRoomById(chatRoom.getRoomId(), (room) -> {
+                if (room == null) btnSent.setEnabled(false);
+            });
+        }
 
-        repository.getRoomById(chatRoom.getRoomId(), (room)->{
-            if(room == null) btnSent.setEnabled(false);
-        });
+        if(!chatRoom.getUsers().contains("Support")) {
+            loadAppointments();
+        }
 
-        loadAppointments();
         loadMessage();
 
         imagePickerLauncher = registerForActivityResult(
