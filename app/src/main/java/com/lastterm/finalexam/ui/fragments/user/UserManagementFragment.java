@@ -22,7 +22,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.lastterm.finalexam.R;
-import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.data.entities.User;
 import com.lastterm.finalexam.ui.adapter.UserManagementAdapter;
 
@@ -88,8 +87,11 @@ public class UserManagementFragment extends Fragment {
 
                             // Handle default isActive value if not present
                             if (document.get("isActive") == null) {
-                                user.setActive(false);
+                                user.setActive(false); // Default to false if not present
+                            } else {
+                                user.setActive(document.getBoolean("isActive")); // Ensure proper type
                             }
+                            Log.d("UserManagement", "User: " + user.getUsername() + ", isActive: " + user.isActive());
 
                             String imgUrl = user.getUrlAvatar();
                             if (imgUrl != null) {
@@ -120,6 +122,7 @@ public class UserManagementFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.check_all) {
+            Log.d("MenuAction", "Check All selected");
             toggleSelectAllUsers();
             return true;
         } else if (item.getItemId() == R.id.delete_selected) {
@@ -134,23 +137,66 @@ public class UserManagementFragment extends Fragment {
     }
 
     private void deleteAllUsers() {
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Xác nhận xoá")
+                .setMessage("Bạn có chắc chắn muốn xoá quyền đăng nhập của tất cả tài khoản không?")
+                .setPositiveButton("Có", (dialog, which) -> {
+                    for (User user : userList) {
+                        db.collection("users").document(user.getUserId())
+                                .update("isActive", false)
+                                .addOnSuccessListener(aVoid -> Log.d("UserManagement", "User " + user.getUsername() + " set inactive"))
+                                .addOnFailureListener(e -> Log.e("UserManagement", "Failed to update user " + user.getUsername(), e));
+                    }
+                    Toast.makeText(getContext(), "Tất cả tài khoản đã bị xoá quyền đăng nhập", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Không", null)
+                .show();
     }
 
     private void deleteSelectedUsers() {
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Xác nhận xoá")
+                .setMessage("Bạn có chắc chắn muốn xoá quyền đăng nhập của các tài khoản đã chọn không?")
+                .setPositiveButton("Có", (dialog, which) -> {
+                    for (User user : userList) {
+                        if (user.isSelected()) {
+                            db.collection("users").document(user.getUserId())
+                                    .update("isActive", false)
+                                    .addOnSuccessListener(aVoid -> Log.d("UserManagement", "User " + user.getUsername() + " set inactive"))
+                                    .addOnFailureListener(e -> Log.e("UserManagement", "Failed to update user " + user.getUsername(), e));
+                        }
+                    }
+                    Toast.makeText(getContext(), "Quyền đăng nhập của tài khoản được chọn đã bị xoá", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Không", null)
+                .show();
     }
 
     private void toggleSelectAllUsers() {
-        if (!allChecked) {
-            for (User user1 : userList) {
-                user1.setSelected(true);
-            }
-        } else {
-            for (User user2 : userList) {
-                user2.setSelected(false);
-            }
-        }
         allChecked = !allChecked;
+
+        for (User user : userList) {
+            user.setSelected(allChecked);
+        }
+
+        Log.d("ToggleSelectAll", "AllChecked state: " + allChecked);
+
         userManagementAdapter.notifyDataSetChanged();
+
+        requireActivity().invalidateOptionsMenu();
+
+        String message = allChecked ? "Tất cả tài khoản đã được chọn" : "Đã bỏ chọn tất cả tài khoản";
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        // Find the `check_all` menu item and update the title
+        MenuItem checkAllItem = menu.findItem(R.id.check_all);
+        if (checkAllItem != null) {
+            checkAllItem.setTitle(allChecked ? "Bỏ đánh dấu tất cả" : "Đánh dấu tất cả");
+        }
+    }
 }

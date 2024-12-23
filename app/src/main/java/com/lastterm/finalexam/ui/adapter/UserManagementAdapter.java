@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.User;
 
@@ -49,9 +50,21 @@ public class UserManagementAdapter extends RecyclerView.Adapter<UserManagementAd
         holder.userEmail.setText(user.getEmail() != null ? "Email: " + user.getEmail() : "Unknown");
         holder.role.setText(user.getRole() != null ? "Vai trò: " + user.getRole() : "Unknown");
 
-        // Hiển thị trạng thái (isActive)
-        Log.d("BindDebug", "Binding User: " + user.getUsername() + ", isActive: " + user.isActive());
-        holder.status.setText("Trạng thái: " + (user.isActive() ? "Hoạt động" : "Không hoạt động"));
+        // Log.d("BindDebug", "Binding User: " + user.getUsername() + ", isActive: " + user.isActive());
+
+        /*
+        db.collection("users").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Log.d("FirestoreDebug", "Document data: " + document.getData());
+                }
+            } else {
+                Log.e("FirestoreError", "Error getting documents: ", task.getException());
+            }
+        });
+        */
+
+        holder.status.setText("Trạng thái: " + ((user.isActive() == true) ? "Hoạt động" : "Không hoạt động"));
 
         if (user.getUrlAvatar() != null && !user.getUrlAvatar().isEmpty()) {
             String imgUrl = user.getUrlAvatar();
@@ -91,7 +104,23 @@ public class UserManagementAdapter extends RecyclerView.Adapter<UserManagementAd
                 // TODO
                 return true;
             } else if (id == R.id.action_delete) {
-                Toast.makeText(context, "Xoá bỏ " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                new androidx.appcompat.app.AlertDialog.Builder(context)
+                        .setTitle("Xác nhận xoá")
+                        .setMessage("Bạn có chắc chắn muốn xoá quyền đăng nhập của tài khoản này không?")
+                        .setPositiveButton("Có", (dialog, which) -> {
+                            db.collection("users").document(user.getUserId())
+                                    .update("isActive", false)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(context, "Đã xoá quyền đăng nhập của " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                                        Log.d("UserManagement", "User " + user.getUsername() + " set inactive");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(context, "Không thể xoá quyền đăng nhập của " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                                        Log.e("UserManagement", "Failed to update user " + user.getUsername(), e);
+                                    });
+                        })
+                        .setNegativeButton("Không", null)
+                        .show();
                 return true;
             }
             return false;

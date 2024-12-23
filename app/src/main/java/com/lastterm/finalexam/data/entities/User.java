@@ -94,13 +94,13 @@ public class User {
 
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
-        map.put("userId", userId);
-        map.put("fullName", fullName);
-        map.put("username", username);
-        map.put("email", email);
-        map.put("phone", phone);
-        map.put("role", role);
-        map.put("urlAvatar", urlAvatar);
+        map.put("userId", userId != null ? userId : "");
+        map.put("fullName", fullName != null ? fullName : "");
+        map.put("username", username != null ? username : "");
+        map.put("email", email != null ? email : "");
+        map.put("phone", phone != null ? phone : "");
+        map.put("role", role != null ? role : "tenant");
+        map.put("urlAvatar", urlAvatar != null ? urlAvatar : "");
         map.put("isActive", isActive);
         return map;
     }
@@ -113,7 +113,7 @@ public class User {
         user.setPhone((String) map.get("phone"));
         user.setRole((String) map.get("role"));
         user.setUrlAvatar((String) map.get("urlAvatar"));
-        user.setActive(map.get("isActive") != null ? (Boolean) map.get("isActive") : false);
+        user.setActive((Boolean) map.get("isActive"));
         return user;
     }
 

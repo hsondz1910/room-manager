@@ -140,8 +140,24 @@ public class RoomManagementFragment extends Fragment {
                 room1.setSelected(false);
             }
         }
+
         allChecked = !allChecked;
         roomManagementAdapter.notifyDataSetChanged();
+
+        requireActivity().invalidateOptionsMenu();
+        String message = allChecked ? "Tất cả tài khoản đã được chọn" : "Đã bỏ chọn tất cả tài khoản";
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        // Find the `check_all` menu item and update the title
+        MenuItem checkAllItem = menu.findItem(R.id.check_all);
+        if (checkAllItem != null) {
+            checkAllItem.setTitle(allChecked ? "Bỏ đánh dấu tất cả" : "Đánh dấu tất cả");
+        }
     }
 
     private void deleteSelectedRooms() {

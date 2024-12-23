@@ -76,6 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Registration successful, save user info to Firestore
                             String userId = mAuth.getCurrentUser().getUid();
+                            String defaultAvatarUrl = "https://i.ibb.co/kmnHSc5/Dt-MUMc-QAQ3-R4h-Gnz-XYq-QFZah-KGm1.jpg";
 
                             // Create User object
                             User user = new User(
@@ -85,7 +86,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     email,
                                     phone,
                                     role,
-                                    "",  // Default avatar URL (empty)
+                                    defaultAvatarUrl,  // Default avatar URL (empty)
                                     status  // Active status by default
                             );
 
