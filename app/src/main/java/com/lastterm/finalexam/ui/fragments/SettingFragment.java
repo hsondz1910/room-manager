@@ -70,25 +70,7 @@ public class SettingFragment extends Fragment {
                     }
                 }
 
-                btnSupport.setOnClickListener(v -> {
-                    repository.findChatRoomWithAdmin(repository.getCurrentUser(), (room) -> {
-                        Fragment defaultFragment = new ChatRoomFragment(documentSnapshot.getString("role"),room);
-                        if (defaultFragment != null) {
-                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                            transaction.replace(R.id.fragment_container, defaultFragment);
-                            transaction.addToBackStack(null);
-                            transaction.commit();
-                        }
-                    }, e -> {});
-                });
 
-                btnAppointment.setOnClickListener(v -> {
-                    getParentFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fragment_container, new AppointmentFrament(documentSnapshot.getString("role")))
-                            .addToBackStack(null)
-                            .commit();
-                });
             }
         }).addOnFailureListener(e ->
                 Toast.makeText(getActivity(), "Failed to load user data", Toast.LENGTH_SHORT).show()
@@ -111,16 +93,38 @@ public class SettingFragment extends Fragment {
         });
 
 
-
+        btnContract.setVisibility(View.GONE);
         repository.getRole((role) ->{
-            if(role.contains("owner")) {
-                btnContract.setVisibility(View.GONE);
+            if(role.contains("tenant")) {
+                btnContract.setVisibility(View.VISIBLE);
             }
             if(role.contains("tenant") || role.contains("owner")){
                 btnAppointment.setVisibility(View.VISIBLE);
+                btnSupport.setVisibility(View.VISIBLE);
             }else {
                 btnAppointment.setVisibility(View.GONE);
+                btnSupport.setVisibility(View.GONE);
             }
+
+            btnSupport.setOnClickListener(v -> {
+                repository.findChatRoomWithAdmin(repository.getCurrentUser(), (room) -> {
+                    Fragment defaultFragment = new ChatRoomFragment(role,room);
+                    if (defaultFragment != null) {
+                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment_container, defaultFragment);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                    }
+                }, e -> {});
+            });
+
+            btnAppointment.setOnClickListener(v -> {
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new AppointmentFrament(role))
+                        .addToBackStack(null)
+                        .commit();
+            });
 
         }, e -> {});
 

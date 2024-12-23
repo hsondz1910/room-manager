@@ -40,10 +40,19 @@ public class ContactFrament extends Fragment {
     }
 
     private void loadContacts(){
-        repository.getAllChatRoomOfUser(repository.getCurrentUser(), chatRooms -> {
-            this.chatRooms = chatRooms;
-            adapter = new ContactAdapter(getContext(), role ,chatRooms);
-            contacts_view.setAdapter(adapter);
-        }, e -> {});
+        if(!role.contains("admin")){
+            repository.getAllChatRoomOfUser(repository.getCurrentUser(), chatRooms -> {
+                this.chatRooms = chatRooms;
+                adapter = new ContactAdapter(getContext(), role ,chatRooms);
+                contacts_view.setAdapter(adapter);
+            }, e -> {});
+        }else {
+            repository.getChatRoomSupport(chatRooms -> {
+                this.chatRooms = chatRooms;
+                adapter = new ContactAdapter(getContext(), role ,chatRooms);
+                contacts_view.setAdapter(adapter);
+            }, e -> {});
+        }
+
     }
 }

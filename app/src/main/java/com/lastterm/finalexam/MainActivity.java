@@ -1,9 +1,7 @@
 package com.lastterm.finalexam;
 
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -12,6 +10,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -48,9 +47,11 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            Insets navigationBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            View bottomNavigationView = findViewById(R.id.bottom_navigation);
+            bottomNavigationView.setPadding(0, 0, 0, navigationBarsInsets.bottom);
             return insets;
         });
 
@@ -139,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
             } else if ("admin".equals(userRole)) {
                 if (item.getItemId() == R.id.nav_user_management) {
                     selectedFragment = new UserManagementFragment();
+                }else if (item.getItemId() == R.id.nav_support) {
+                    selectedFragment = new ContactFrament("admin");
                 } else if (item.getItemId() == R.id.nav_setting) {
                     selectedFragment = new SettingFragment();
                 }
