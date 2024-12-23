@@ -51,6 +51,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
     @Override
     public void onBindViewHolder(@NonNull ContactAdapter.ContactViewHolder holder, int position) {
         ChatRoom chatRoom = chatRooms.get(position);
+
         repository.getRoomById(chatRoom.getRoomId(), room -> {
             if(room!= null){
                 holder.text_room_name.setText(room.getTitle());

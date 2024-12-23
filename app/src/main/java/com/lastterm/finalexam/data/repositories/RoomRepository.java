@@ -19,6 +19,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.lastterm.finalexam.data.entities.Appointment;
 import com.lastterm.finalexam.data.entities.ChatRoom;
+import com.lastterm.finalexam.data.entities.Contract;
 import com.lastterm.finalexam.data.entities.MessageClass;
 import com.lastterm.finalexam.data.entities.RoomFilter;
 import com.lastterm.finalexam.data.entities.Room;
@@ -706,5 +707,22 @@ public class RoomRepository {
         db.collection("appointments").document(appointment.getId()).delete()
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
+    }
+
+    public void getContract(OnSuccessListener<List<Contract>> onSuccess){
+        db.collection("contracts")
+                .whereEqualTo("tenantId", getCurrentUser())
+                .get()
+                .addOnCompleteListener((res) -> {
+                   if(res.isSuccessful()){
+                       List<Contract> contracts = new ArrayList<>();
+                       for (QueryDocumentSnapshot doc : res.getResult()) {
+                           Contract contract = doc.toObject(Contract.class);
+                           contract.setContractId(doc.getId());
+                           contracts.add(contract);
+                   }
+                       onSuccess.onSuccess(contracts);
+                   }
+                });
     }
 }

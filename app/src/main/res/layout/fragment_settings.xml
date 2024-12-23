@@ -106,6 +106,14 @@
         app:icon="@drawable/baseline_edit_calendar_24" />
 
     <Button
+        android:id="@+id/btnContract"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Contract"
+        app:icon="@drawable/ic_menu_contract_management" />
+
+    <Button
         android:id="@+id/btnSupport"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
