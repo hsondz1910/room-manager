@@ -54,6 +54,26 @@ public class RoomRepository {
         storage = FirebaseStorage.getInstance().getReference();
     }
 
+    public void listenForRoomUpdates(Consumer<List<Room>> onNewRooms, Consumer<Room> onRoomAdded) {
+        db.collection("rooms")
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null) {
+                        Log.w("RoomRepository", "Listen failed.", e);
+                        return;
+                    }
+
+                    if (snapshots != null) {
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            if (dc.getType() == DocumentChange.Type.ADDED) {
+                                Room newRoom = dc.getDocument().toObject(Room.class);
+                                newRoom.setId(dc.getDocument().getId());
+                                onRoomAdded.accept(newRoom);
+                            }
+                        }
+                    }
+                });
+    }
+
     public void getAllRooms(Consumer<List<Room>> callback) {
         db.collection("rooms")
                 .get()
@@ -167,18 +187,6 @@ public class RoomRepository {
                 .addOnFailureListener(e -> {
                     Log.e("Firestore Error", "Error fetching document", e);
                 });
-    }
-
-    public void isFavorite(String userId, String roomId, OnSuccessListener<Boolean> onSuccess, OnFailureListener onFailure) {
-        db.collection("users").document(userId)
-                .collection("favorites")
-                .document(roomId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    boolean exists = documentSnapshot.exists(); // True if the document exists
-                    onSuccess.onSuccess(exists);
-                })
-                .addOnFailureListener(onFailure);
     }
 
     public void getFavorites(String userId, OnSuccessListener<List<Room>> onSuccess) {
@@ -343,20 +351,6 @@ public class RoomRepository {
         }
     }
 
-    public void getChatRoomWithID(String roomId, OnSuccessListener<ChatRoom> onSuccess) {
-        try {
-            db.collection("chatRooms").document(roomId).get().addOnCompleteListener(documentSnapshot -> {
-                DocumentSnapshot doc = documentSnapshot.getResult();
-                ChatRoom chatRoom = doc.toObject(ChatRoom.class);
-                chatRoom.setId(doc.getId());
-                onSuccess.onSuccess(chatRoom);
-            });
-        } catch (Exception e) {
-            Log.d("Get Room by id: ", e.getMessage());
-        }
-
-    }
-
     public void findChatRoom(String chatRoomID, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure) {
         Log.d("findChatRoom", "findChatRoom: " + chatRoomID);
         db.collection("chatRooms")
@@ -395,24 +389,6 @@ public class RoomRepository {
                     }
 
                 });
-    }
-
-    public void getAllChatRoomSupport(OnSuccessListener<List<ChatRoom>> onSuccess, OnFailureListener onFailure) {
-        try {
-            db.collection("chatRooms").whereEqualTo("users", "Support").get().addOnCompleteListener(snapshot -> {
-                if (snapshot.isSuccessful()) {
-                    List<ChatRoom> chatRooms = new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : snapshot.getResult()) {
-                        ChatRoom chatRoom = doc.toObject(ChatRoom.class);
-                        chatRoom.setId(doc.getId());
-                        chatRooms.add(chatRoom);
-                    }
-                    onSuccess.onSuccess(chatRooms);
-                }
-            });
-        } catch (Exception e) {
-            Log.d("getAllRoomSupport", "getAllChatRoomSupport: " + e.getMessage());
-        }
     }
     public void isContainRoom(String roomID, OnSuccessListener<Boolean> onSuccess, OnFailureListener onFailure){
         try {
@@ -512,7 +488,33 @@ public class RoomRepository {
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Error getting documents", e);
                 });
+    }
 
+    public void listenToMessagesNotification(String roomId, OnSuccessListener<List<MessageClass>> onSuccess, OnFailureListener onFailure) {
+        db.collection("chatRooms")
+                .document(roomId)
+                .collection("messages")
+                .orderBy("date")
+                .addSnapshotListener((querySnapshot, e) -> {
+                    if (e != null) {
+                        onFailure.onFailure(e);
+                        return;
+                    }
+
+                    if (querySnapshot != null) {
+                        List<MessageClass> messageList = new ArrayList<>();
+                        for (DocumentChange dc : querySnapshot.getDocumentChanges()) {
+                            if (dc.getType() == DocumentChange.Type.ADDED) {
+                                MessageClass message = dc.getDocument().toObject(MessageClass.class);
+                                message.setId(dc.getDocument().getId());
+                                messageList.add(message);
+                            }
+                        }
+                        onSuccess.onSuccess(messageList);
+                    } else {
+                        onSuccess.onSuccess(new ArrayList<>());
+                    }
+                });
     }
 
     public void listenToMessages(String roomId, OnSuccessListener<List<MessageClass>> onSuccess, OnFailureListener onFailure) {

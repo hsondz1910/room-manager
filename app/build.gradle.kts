@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.lastterm.finalexam"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -59,4 +59,6 @@ dependencies {
     implementation(libs.glide)
     annotationProcessor(libs.compiler)
     implementation(libs.okhttp)
+    implementation("androidx.core:core:1.9.0")
+
 }

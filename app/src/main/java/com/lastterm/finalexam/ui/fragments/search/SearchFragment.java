@@ -1,6 +1,10 @@
 package com.lastterm.finalexam.ui.fragments.search;
 
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -11,6 +15,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -71,6 +76,23 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        roomRepository.listenForRoomUpdates(rooms -> {
+            if (!rooms.isEmpty()) {
+                adapter = new RoomAdapter(rooms, getContext());
+                recyclerView.setAdapter(adapter);
+            }
+        }, newRoom -> {
+            showNotification("Phòng mới", "Phòng mới được tải lên: " + newRoom.getTitle());
+            roomRepository.getAllRooms(rooms -> {
+                if (rooms.isEmpty()) {
+                    Toast.makeText(getContext(), "Không có dữ liệu", Toast.LENGTH_SHORT).show();
+                } else {
+                    adapter = new RoomAdapter(rooms, getContext());
+                    recyclerView.setAdapter(adapter);
+                }
+            });
+        });
+
         chipPrice.setOnClickListener(v -> {
             // Tạo LinearLayout với hướng dọc (Vertical)
             LinearLayout layout = new LinearLayout(requireContext());
@@ -78,15 +100,15 @@ public class SearchFragment extends Fragment {
 
             EditText inputMin = new EditText(requireContext());
             inputMin.setHint("Nhập giá tối thiểu");
-            inputMin.setInputType(InputType.TYPE_CLASS_NUMBER);  // Chỉ cho phép nhập số
-            inputMin.setText(String.valueOf(filter.getMinPrice()==0?"":filter.getMinPrice()));  // Hiển thị giá trị minPrice hiện tại
+            inputMin.setInputType(InputType.TYPE_CLASS_NUMBER);
+            inputMin.setText(String.valueOf(filter.getMinPrice()==0?"":filter.getMinPrice()));
             layout.addView(inputMin);
 
 
             EditText inputMax = new EditText(requireContext());
             inputMax.setHint("Nhập giá tối đa");
-            inputMax.setInputType(InputType.TYPE_CLASS_NUMBER);  // Chỉ cho phép nhập số
-            inputMax.setText(String.valueOf(filter.getMaxPrice()==0?"":filter.getMaxPrice()));  // Hiển thị giá trị maxPrice hiện tại
+            inputMax.setInputType(InputType.TYPE_CLASS_NUMBER);
+            inputMax.setText(String.valueOf(filter.getMaxPrice()==0?"":filter.getMaxPrice()));
             layout.addView(inputMax);
 
 
@@ -178,4 +200,27 @@ public class SearchFragment extends Fragment {
             }
         });
     }
+
+    private void showNotification(String title, String message) {
+        NotificationManager manager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        String channelId = "new_rooms_channel";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Thông báo phòng mới",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            manager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), channelId)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        manager.notify((int) System.currentTimeMillis(), builder.build());
+    }
+
 }

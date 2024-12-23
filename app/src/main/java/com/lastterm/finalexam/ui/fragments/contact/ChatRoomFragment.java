@@ -3,12 +3,16 @@ package com.lastterm.finalexam.ui.fragments.contact;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.util.Log;
@@ -36,6 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -251,21 +256,51 @@ public class ChatRoomFragment extends Fragment {
                 repository.setMessagesRead(chatRoom.getId(),chatRoom.getUsers().get(1) ,(d) -> {}, (e) -> {});
             else
                 repository.setMessagesRead(chatRoom.getId(),chatRoom.getUsers().get(0) ,(d) -> {}, (e) -> {});
-            updateMesage(chatRoom.getId());
+            updateMessages(chatRoom.getId());
         }, (e) -> {
             Log.d("loadMessage", "fail:" + e.toString());
         });
     }
 
-    private void updateMesage(String roomId){
-        repository.listenToMessages(roomId, (newMessages) -> {
-            if(newMessages != null)
-                if(!newMessages.isEmpty()){
-                    this.messages.clear();
-                    this.messages.addAll(newMessages);
-                    adapter.notifyDataSetChanged();
+    private void updateMessages(String roomId) {
+        repository.listenToMessagesNotification(roomId, newMessages -> {
+            if (newMessages != null && !newMessages.isEmpty()) {
+                for (MessageClass newMessage : newMessages) {
+                    if (newMessage != null && newMessage.getMessage() != null) {
+                        messages.add(newMessage);
+                        adapter.notifyDataSetChanged();
+                        chatRecyclerView.scrollToPosition(messages.size() - 1);
+
+                        // Display a notification for the new message
+                        showNotification("Tin nhắn mới", newMessage.getMessage());
+                    }
                 }
-        }, (e) -> {});
+            }
+        }, e -> Log.e("ChatRoomFragment", "Error listening to new messages: " + e.getMessage()));
+    }
+
+    private void showNotification(String title, String content) {
+        NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        String channelId = "chat_message_channel";
+
+        // Create notification channel for devices running Android O or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Chat Messages",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(requireContext(), channelId)
+                .setSmallIcon(R.drawable.ic_notification) // Replace with your app's notification icon
+                .setContentTitle(title)
+                .setContentText(content)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
+
+        notificationManager.notify((int) System.currentTimeMillis(), notificationBuilder.build());
     }
 
     private void sendMessage() {
