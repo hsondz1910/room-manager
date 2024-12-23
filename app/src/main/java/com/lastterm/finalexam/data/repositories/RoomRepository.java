@@ -323,6 +323,12 @@ public class RoomRepository {
     public String getCurrentUser(){
         return auth.getUid();
     }
+    public void getRole(OnSuccessListener<String> onSuccess, OnFailureListener onFailure){
+        db.collection("users").document(getCurrentUser()).get().addOnSuccessListener(documentSnapshot -> {
+            String role = documentSnapshot.getString("role");
+            onSuccess.onSuccess(role);
+        }).addOnFailureListener(onFailure);
+    }
 
     public void creatChatRoom(String roomID,String userIDSent, String userIDReceiver, OnSuccessListener<ChatRoom> onSuccess, OnFailureListener onFailure) {
         ChatRoom chatRoom = new ChatRoom(roomID, userIDSent, userIDReceiver);

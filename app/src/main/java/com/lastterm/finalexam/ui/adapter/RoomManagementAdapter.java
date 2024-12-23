@@ -20,12 +20,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.R;
+import com.lastterm.finalexam.ui.fragments.room.RoomDetailFragment;
 
 import java.util.List;
 
@@ -93,7 +96,11 @@ public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAd
         // Handle menu item clicks
         popupMenu.setOnMenuItemClickListener(menuItem -> {
             int id = menuItem.getItemId();
-            if (id == R.id.action_select) {
+            if (id == R.id.detail_room) {
+                Fragment fragment = new RoomDetailFragment(room);
+                AppCompatActivity activity = (AppCompatActivity) view.getContext();
+                activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack(null).commit();
+            } else if (id == R.id.action_select) {
                 room.setSelected(!room.isSelected());
                 holder.itemCheckbox.setChecked(room.isSelected());
                 selectItem.setTitle(room.isSelected() ? "Bỏ lựa chọn" : "Lựa chọn");
