@@ -36,7 +36,8 @@
 
         <activity
             android:name=".ui.account.LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -44,7 +45,8 @@
         </activity>
 
         <activity android:name=".ui.account.ForgotPasswordActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity"
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".ui.account.RegisterActivity" />
     </application>
 </manifest>

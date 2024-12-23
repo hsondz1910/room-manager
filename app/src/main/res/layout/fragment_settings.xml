@@ -95,14 +95,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Edit Profile" />
+        android:text="@string/edit_profile" />
 
     <Button
         android:id="@+id/btnAppointment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Appointment"
+        android:text="@string/appointment"
         app:icon="@drawable/baseline_edit_calendar_24" />
 
     <Button
@@ -110,7 +110,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Contract"
+        android:text="@string/contact"
         app:icon="@drawable/ic_menu_contract_management" />
 
     <Button
@@ -118,7 +118,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Support" />
+        android:text="@string/support" />
 
     <Button
         android:id="@+id/btnLogout"
