@@ -48,6 +48,7 @@ public class ContractManagementFragment extends Fragment {
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeButtonEnabled(false);
+        toolbar.setTitle(R.string.contract_management);
 
         // Initialize menu
         toolbar.inflateMenu(R.menu.menu_contract_management);

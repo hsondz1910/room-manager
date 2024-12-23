@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +53,7 @@ public class RoomDetailFragment extends Fragment {
     CommentApdapter cmAdapter;
     Spinner spinner;
     EditText txtAddComment;
+    LinearLayout btnLayout, commentLayout;
 
     Room room;
     ArrayList<uComment> comments;
@@ -65,6 +67,7 @@ public class RoomDetailFragment extends Fragment {
     public RoomDetailFragment(Room room) {
         this.room = room;
     }
+
 
     @Nullable
     @Override
@@ -95,7 +98,8 @@ public class RoomDetailFragment extends Fragment {
         spinner = view.findViewById(R.id.spinner_rate);
         txtAddComment = view.findViewById(R.id.txt_add_comment);
 
-
+        btnLayout = view.findViewById(R.id.btn_detail_room_layout);
+        commentLayout = view.findViewById(R.id.comment_layout);
 
         repository = new RoomRepository();
 
@@ -134,8 +138,14 @@ public class RoomDetailFragment extends Fragment {
             });
         }
 
-        if(!room.getImgUrls().isEmpty()){
+        repository.getRole((role -> {
+            if (role.equals("owner")) {
+                btnLayout.setVisibility(View.GONE);
+                commentLayout.setVisibility(View.GONE);
+            }
+        }), e -> {});
 
+        if(!room.getImgUrls().isEmpty()){
             try {
                 ImageSliderAdapter adapter = new ImageSliderAdapter(getContext(), room.getImgUrls());
                 roomViewPager.setAdapter(adapter);

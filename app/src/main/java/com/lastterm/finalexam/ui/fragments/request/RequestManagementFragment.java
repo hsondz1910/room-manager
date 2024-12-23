@@ -46,6 +46,7 @@ public class RequestManagementFragment extends Fragment {
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeButtonEnabled(false);
+        toolbar.setTitle(R.string.request_management);
 
         requestRepository = new RequestRepository();
 

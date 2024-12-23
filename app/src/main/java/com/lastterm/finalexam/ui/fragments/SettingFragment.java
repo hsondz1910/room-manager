@@ -24,10 +24,11 @@ import com.lastterm.finalexam.ui.account.EditProfileFragment;
 import com.lastterm.finalexam.ui.account.LoginActivity;
 import com.lastterm.finalexam.ui.fragments.appointment.AppointmentFrament;
 import com.lastterm.finalexam.ui.fragments.contact.ChatRoomFragment;
+import com.lastterm.finalexam.ui.fragments.contract.ContractFragment;
 
 public class SettingFragment extends Fragment {
     private TextView tvUsername, tvEmail, tvPhone, tvRole;
-    private Button btnLogout, btnEditProfile, btnSupport, btnAppointment;
+    private Button btnLogout, btnEditProfile, btnSupport, btnAppointment, btnContract;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private ImageView img;
@@ -50,6 +51,7 @@ public class SettingFragment extends Fragment {
         btnEditProfile = view.findViewById(R.id.btnEditProfile);
         btnSupport = view.findViewById(R.id.btnSupport);
         btnAppointment = view.findViewById(R.id.btnAppointment);
+        btnContract = view.findViewById(R.id.btnContract);
         img = view.findViewById(R.id.profileImage);
 
         String userId = mAuth.getCurrentUser().getUid();
@@ -110,7 +112,25 @@ public class SettingFragment extends Fragment {
 
 
 
+        repository.getRole((role) ->{
+            if(role.contains("owner")) {
+                btnContract.setVisibility(View.GONE);
+            }
+            if(role.contains("tenant") || role.contains("owner")){
+                btnAppointment.setVisibility(View.VISIBLE);
+            }else {
+                btnAppointment.setVisibility(View.GONE);
+            }
 
+        }, e -> {});
+
+        btnContract.setOnClickListener(v -> {
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new ContractFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
 
         return view;
     }
