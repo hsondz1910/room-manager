@@ -110,8 +110,6 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment = new FavoritesFragment();
                 }else if (item.getItemId() == R.id.nav_contact) {
                     selectedFragment = new ContactFrament("tenant");
-                }else if (item.getItemId() == R.id.nav_appointment) {
-                    selectedFragment = new AppointmentFrament("tenant");
                 }else if (item.getItemId() == R.id.nav_setting) {
                     selectedFragment = new SettingFragment();
                 }
@@ -125,8 +123,6 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment = new RequestManagementFragment();
                 } else if (item.getItemId() == R.id.nav_contact) {
                     selectedFragment = new ContactFrament("owner");
-                } else if (item.getItemId() == R.id.nav_appointment) {
-                    selectedFragment = new AppointmentFrament("owner");
                 } else if (item.getItemId() == R.id.nav_setting) {
                     selectedFragment = new SettingFragment();
                 }

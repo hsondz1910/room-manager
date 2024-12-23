@@ -12,27 +12,33 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.lastterm.finalexam.MainActivity;
 import com.lastterm.finalexam.R;
+import com.lastterm.finalexam.data.repositories.RoomRepository;
 import com.lastterm.finalexam.ui.account.EditProfileFragment;
 import com.lastterm.finalexam.ui.account.LoginActivity;
+import com.lastterm.finalexam.ui.fragments.appointment.AppointmentFrament;
+import com.lastterm.finalexam.ui.fragments.contact.ChatRoomFragment;
 
 public class SettingFragment extends Fragment {
     private TextView tvUsername, tvEmail, tvPhone, tvRole;
-    private Button btnLogout, btnEditProfile;
+    private Button btnLogout, btnEditProfile, btnSupport, btnAppointment;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private ImageView img;
+    private RoomRepository repository;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        repository = new RoomRepository();
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -42,6 +48,8 @@ public class SettingFragment extends Fragment {
         tvRole = view.findViewById(R.id.tvRole);
         btnLogout = view.findViewById(R.id.btnLogout);
         btnEditProfile = view.findViewById(R.id.btnEditProfile);
+        btnSupport = view.findViewById(R.id.btnSupport);
+        btnAppointment = view.findViewById(R.id.btnAppointment);
         img = view.findViewById(R.id.profileImage);
 
         String userId = mAuth.getCurrentUser().getUid();
@@ -59,6 +67,26 @@ public class SettingFragment extends Fragment {
                         throw new RuntimeException(e);
                     }
                 }
+
+                btnSupport.setOnClickListener(v -> {
+                    repository.findChatRoomWithAdmin(repository.getCurrentUser(), (room) -> {
+                        Fragment defaultFragment = new ChatRoomFragment(documentSnapshot.getString("role"),room);
+                        if (defaultFragment != null) {
+                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                            transaction.replace(R.id.fragment_container, defaultFragment);
+                            transaction.addToBackStack(null);
+                            transaction.commit();
+                        }
+                    }, e -> {});
+                });
+
+                btnAppointment.setOnClickListener(v -> {
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, new AppointmentFrament(documentSnapshot.getString("role")))
+                            .addToBackStack(null)
+                            .commit();
+                });
             }
         }).addOnFailureListener(e ->
                 Toast.makeText(getActivity(), "Failed to load user data", Toast.LENGTH_SHORT).show()
@@ -79,6 +107,10 @@ public class SettingFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+
+
+
+
 
         return view;
     }
