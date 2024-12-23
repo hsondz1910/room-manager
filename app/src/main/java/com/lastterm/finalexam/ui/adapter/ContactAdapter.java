@@ -51,16 +51,40 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
     @Override
     public void onBindViewHolder(@NonNull ContactAdapter.ContactViewHolder holder, int position) {
         ChatRoom chatRoom = chatRooms.get(position);
+        if(role.equals("admin")){
+            holder.text_room_name.setText("Support");
+            repository.getNameByUserID(chatRoom.getUsers().get(0), name -> {
+                holder.text_room_owwner.setText(name);
+            });
+            holder.image.setVisibility(View.GONE);
+        }
+        else {
+            repository.getRoomById(chatRoom.getRoomId(), room -> {
+                if(room!= null){
+                    holder.text_room_name.setText(room.getTitle());
 
-        repository.getRoomById(chatRoom.getRoomId(), room -> {
-            if(room!= null){
-                holder.text_room_name.setText(room.getTitle());
-                if(role.equals("owner")) {
-                    repository.getNameByUserID(room.getOwnerId(), name -> {
-                        holder.text_room_owwner.setText(name);
-                    });
-                }
-                else{
+                    if(role.equals("owner")) {
+                        repository.getNameByUserID(room.getOwnerId(), name -> {
+                            holder.text_room_owwner.setText(name);
+                        });
+                    }
+                    else{
+                        String user = chatRoom.getUsers().get(0);
+                        if(user.equals(repository.getCurrentUser())){
+                            repository.getNameByUserID(chatRoom.getUsers().get(1), name -> {
+                                holder.text_room_owwner.setText(name);
+                            });
+                        }else {
+                            repository.getNameByUserID(user, name -> {
+                                holder.text_room_owwner.setText("Người nhắn: " + name);
+                            });
+                        }
+                    }
+
+                    Glide.with(context).load(room.getImgUrls().get(0)).into(holder.image);
+                }else {
+                    holder.text_room_name.setText("Phòng không còn tồn tại");
+                    holder.text_room_owwner.setText("");
                     String user = chatRoom.getUsers().get(0);
                     if(user.equals(repository.getCurrentUser())){
                         repository.getNameByUserID(chatRoom.getUsers().get(1), name -> {
@@ -72,23 +96,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
                         });
                     }
                 }
+            });
+        }
 
-                Glide.with(context).load(room.getImgUrls().get(0)).into(holder.image);
-            }else {
-                holder.text_room_name.setText("Phòng không còn tồn tại");
-                holder.text_room_owwner.setText("");
-                String user = chatRoom.getUsers().get(0);
-                if(user.equals(repository.getCurrentUser())){
-                    repository.getNameByUserID(chatRoom.getUsers().get(1), name -> {
-                        holder.text_room_owwner.setText(name);
-                    });
-                }else {
-                    repository.getNameByUserID(user, name -> {
-                        holder.text_room_owwner.setText("Người nhắn: " + name);
-                    });
-                }
-            }
-        });
+
         holder.itemView.setOnClickListener(v -> {
             repository.isContainRoom(chatRoom.getRoomId(), (isContain) -> {
                 if(isContain){
@@ -101,9 +112,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
             },(e) -> {});
         });
 
-        holder.btn_img_Del.setOnLongClickListener(e -> {
+        holder.btn_img_Del.setOnClickListener(e -> {
             showDialog(position, chatRoom.getRoomId());
-            return true;
         });
 
         repository.listenToMessages(chatRoom.getId(), (newMessages) -> {

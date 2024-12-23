@@ -130,6 +130,8 @@ public class MainActivity extends AppCompatActivity {
             } else if ("admin".equals(userRole)) {
                 if (item.getItemId() == R.id.nav_user_management) {
                     selectedFragment = new UserManagementFragment();
+                }else if (item.getItemId() == R.id.nav_support) {
+                    selectedFragment = new ContactFrament("admin");
                 } else if (item.getItemId() == R.id.nav_setting) {
                     selectedFragment = new SettingFragment();
                 }

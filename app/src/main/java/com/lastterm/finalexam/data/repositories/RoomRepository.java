@@ -446,6 +446,24 @@ public class RoomRepository {
         }
     }
 
+    public void getChatRoomSupport(OnSuccessListener<List<ChatRoom>> onSuccess, OnFailureListener onFailure){
+        try {
+            db.collection("chatRooms").whereArrayContains("users", "Support").get().addOnCompleteListener(snapshot -> {
+                if (snapshot.isSuccessful()) {
+                    List<ChatRoom> chatRooms = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : snapshot.getResult()) {
+                        ChatRoom chatRoom = doc.toObject(ChatRoom.class);
+                        chatRoom.setId(doc.getId());
+                        chatRooms.add(chatRoom);
+                    }
+                    onSuccess.onSuccess(chatRooms);
+                }
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void sendMessage(Context context,String roomId, String msg, Uri img, OnSuccessListener<MessageClass> onSuccess, OnFailureListener onFailure) {
         try {
             MessageClass message = new MessageClass(msg, auth.getUid(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), "", false);
