@@ -111,10 +111,10 @@ public class SettingFragment extends Fragment {
         });
 
 
-
+        btnContract.setVisibility(View.GONE);
         repository.getRole((role) ->{
-            if(!role.contains("tenant")) {
-                btnContract.setVisibility(View.GONE);
+            if(role.contains("tenant")) {
+                btnContract.setVisibility(View.VISIBLE);
             }
             if(role.contains("tenant") || role.contains("owner")){
                 btnAppointment.setVisibility(View.VISIBLE);
