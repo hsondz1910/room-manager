@@ -110,8 +110,18 @@ public class SettingFragment extends Fragment {
                     .commit();
         });
 
+
+
         repository.getRole((role) ->{
-            if(role.contains("owner")) btnContract.setVisibility(View.GONE);
+            if(role.contains("owner")) {
+                btnContract.setVisibility(View.GONE);
+            }
+            if(role.contains("tenant") || role.contains("owner")){
+                btnAppointment.setVisibility(View.VISIBLE);
+            }else {
+                btnAppointment.setVisibility(View.GONE);
+            }
+
         }, e -> {});
 
         btnContract.setOnClickListener(v -> {
