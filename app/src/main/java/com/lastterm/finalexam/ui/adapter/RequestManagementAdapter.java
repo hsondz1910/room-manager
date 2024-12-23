@@ -256,7 +256,7 @@ public class RequestManagementAdapter extends RecyclerView.Adapter<RequestManage
 
         public RequestViewHolder(@NonNull View itemView) {
             super(itemView);
-            roomTitle = itemView.findViewById(R.id.roomTitle);
+            roomTitle = itemView.findViewById(R.id.username);
             depositAmount = itemView.findViewById(R.id.depositAmount);
             userName = itemView.findViewById(R.id.userName);
             roomStatus = itemView.findViewById(R.id.status);

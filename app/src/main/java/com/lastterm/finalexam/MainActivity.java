@@ -17,12 +17,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.lastterm.finalexam.ui.fragments.appointment.AppointmentFrament;
 import com.lastterm.finalexam.ui.fragments.contract.ContractManagementFragment;
 import com.lastterm.finalexam.ui.fragments.contact.ContactFrament;
-import com.lastterm.finalexam.ui.fragments.home.AdminHomeFragment;
 import com.lastterm.finalexam.ui.fragments.favorites.FavoritesFragment;
 import com.lastterm.finalexam.ui.fragments.SettingFragment;
 import com.lastterm.finalexam.ui.fragments.request.RequestManagementFragment;
 import com.lastterm.finalexam.ui.fragments.room.RoomManagementFragment;
 import com.lastterm.finalexam.ui.fragments.search.SearchFragment;
+import com.lastterm.finalexam.ui.fragments.user.UserManagementFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -132,7 +132,11 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             } else if ("admin".equals(userRole)) {
-                // Fragment cho Admin
+                if (item.getItemId() == R.id.nav_user_management) {
+                    selectedFragment = new UserManagementFragment();
+                } else if (item.getItemId() == R.id.nav_setting) {
+                    selectedFragment = new SettingFragment();
+                }
             }
 
             // Replace Fragment
@@ -161,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         } else if ("owner".equals(role)) {
             return new RoomManagementFragment();  // Default Fragment for owner
         } else if ("admin".equals(role)) {
-            return new AdminHomeFragment();  // Default Fragment for admin
+            return new UserManagementFragment();  // Default Fragment for admin
         }
         return null;
     }

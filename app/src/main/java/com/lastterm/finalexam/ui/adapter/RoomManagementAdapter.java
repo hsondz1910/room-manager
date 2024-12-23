@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -217,9 +216,9 @@ public class RoomManagementAdapter extends RecyclerView.Adapter<RoomManagementAd
 
         public RoomViewHolder(@NonNull View itemView) {
             super(itemView);
-            roomTitle = itemView.findViewById(R.id.roomTitle);
+            roomTitle = itemView.findViewById(R.id.username);
             roomPrice = itemView.findViewById(R.id.roomPrice);
-            roomAddress = itemView.findViewById(R.id.roomAddress);
+            roomAddress = itemView.findViewById(R.id.userStatus);
             roomImageManagement = itemView.findViewById(R.id.roomImageManagement);
             menuIcon = itemView.findViewById(R.id.menuIcon);
             itemCheckbox = itemView.findViewById(R.id.item_checkbox);

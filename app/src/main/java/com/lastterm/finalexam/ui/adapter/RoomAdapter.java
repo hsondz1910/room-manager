@@ -127,9 +127,9 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
         public RoomViewHolder(@NonNull View itemView) {
             super(itemView);
-            roomTitle = itemView.findViewById(R.id.roomTitle);
+            roomTitle = itemView.findViewById(R.id.username);
             roomPrice = itemView.findViewById(R.id.roomPrice);
-            roomAddress = itemView.findViewById(R.id.roomAddress);
+            roomAddress = itemView.findViewById(R.id.userStatus);
             heartIcon = itemView.findViewById(R.id.heartIcon);
             roomImg = itemView.findViewById(R.id.roomImage);
             detailButton = itemView.findViewById(R.id.detailButton);

@@ -2,7 +2,6 @@ package com.lastterm.finalexam.ui.account;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -25,12 +24,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.lastterm.finalexam.R;
-import com.lastterm.finalexam.data.entities.Room;
 import com.lastterm.finalexam.data.entities.User;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class EditProfileFragment extends Fragment {
 
@@ -50,6 +45,7 @@ public class EditProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_profile, container, false);
 
+        // Mapping interface components
         edtFullName = view.findViewById(R.id.edtFullName);
         edtUsername = view.findViewById(R.id.edtUsername);
         edtEmail = view.findViewById(R.id.edtEmail);
@@ -59,16 +55,21 @@ public class EditProfileFragment extends Fragment {
         btnChangePassword = view.findViewById(R.id.btnChangePassword);
         imageEditProfile = view.findViewById(R.id.image_edit_profile);
 
+        // Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         userId = mAuth.getCurrentUser().getUid();
 
+        // Initialize repository
         repository = new RoomRepository();
 
+        // Load user data
         loadUserData();
 
+        // Save data
         btnSave.setOnClickListener(v -> updateProfile());
 
+        // Change Password
         btnChangePassword.setOnClickListener(v -> {
             String email = edtEmail.getText().toString();
             if (!TextUtils.isEmpty(email)) {
@@ -85,6 +86,7 @@ public class EditProfileFragment extends Fragment {
             }
         });
 
+        // Launch launcher to select image
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -97,65 +99,77 @@ public class EditProfileFragment extends Fragment {
                 }
         );
 
-        imageEditProfile.setOnClickListener((v) -> {
-            showDialogPickImg();
-        });
+        // Select photo
+        imageEditProfile.setOnClickListener((v) -> showDialogPickImg());
 
         return view;
     }
 
     private void loadUserData() {
+        // Load user data from Firestore
         DocumentReference docRef = db.collection("users").document(userId);
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
-                edtFullName.setText(documentSnapshot.getString("fullName"));
-                edtUsername.setText(documentSnapshot.getString("username"));
-                edtEmail.setText(documentSnapshot.getString("email"));
-                edtPhone.setText(documentSnapshot.getString("phone"));
-                edtRole.setText(documentSnapshot.getString("role"));
-                if(documentSnapshot.getString("urlAvatar") != null){
-                    try {
-                        Glide.with(this).load(documentSnapshot.getString("urlAvatar")).into(imageEditProfile);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+                User user = documentSnapshot.toObject(User.class);
+                if (user != null) {
+                    edtFullName.setText(user.getFullName());
+                    edtUsername.setText(user.getUsername());
+                    edtEmail.setText(user.getEmail());
+                    edtPhone.setText(user.getPhone());
+                    edtRole.setText(user.getRole());
+
+                    if (user.getUrlAvatar() != null) {
+                        Glide.with(this)
+                                .load(user.getUrlAvatar())
+                                .placeholder(R.drawable.placeholder_img)
+                                .error(R.drawable.error_image)
+                                .into(imageEditProfile);
                     }
                 }
             }
-        });
+        }).addOnFailureListener(e -> Toast.makeText(getActivity(), "Lỗi khi tải dữ liệu người dùng", Toast.LENGTH_SHORT).show());
     }
 
     private void updateProfile() {
-        String fullName = edtFullName.getText().toString();
-        String username = edtUsername.getText().toString();
-        String email = edtEmail.getText().toString();
-        String phone = edtPhone.getText().toString();
-        String role = edtRole.getText().toString();
+        // Get data from interface
+        String fullName = edtFullName.getText().toString().trim();
+        String username = edtUsername.getText().toString().trim();
+        String email = edtEmail.getText().toString().trim();
+        String phone = edtPhone.getText().toString().trim();
+        String role = edtRole.getText().toString().trim();
 
+        // Check data
         if (TextUtils.isEmpty(fullName) || TextUtils.isEmpty(username) || TextUtils.isEmpty(email)) {
             Toast.makeText(getActivity(), "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        User user = new User(fullName, username, email, phone, role,"");
-        if(selectedImageUri != null){
-            repository.uploadImageImgBBForChat(getContext(), repository.getCurrentUser(), selectedImageUri,(url) -> {
-                user.setUrlAvatar(url);
-                db.collection("users").document(userId).update(user.toMap())
-                .addOnSuccessListener(aVoid -> Toast.makeText(getActivity(), "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(getActivity(), "Cập nhật thất bại", Toast.LENGTH_SHORT).show());
+        // Create User object
+        User user = new User(userId, fullName, username, email, phone, role, "", true);
+
+        if (selectedImageUri != null) {
+            // Upload photo if there are changes
+            repository.uploadImageImgBBForChat(getContext(), repository.getCurrentUser(), selectedImageUri, url -> {
+                user.setUrlAvatar(url); // Update avatar URL
+                saveUserToFirestore(user);
             });
+        } else {
+            // Save information without updating image
+            saveUserToFirestore(user);
         }
-
-
-
     }
 
-    private void showDialogPickImg(){
+    private void saveUserToFirestore(User user) {
+        db.collection("users").document(userId)
+                .set(user.toMap())
+                .addOnSuccessListener(aVoid -> Toast.makeText(getActivity(), "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(getActivity(), "Cập nhật thất bại", Toast.LENGTH_SHORT).show());
+    }
+
+    private void showDialogPickImg() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Bạn có muốn mở thư viện ảnh")
-                .setPositiveButton("Xác nhận", (dialog, which) -> {
-                    openImagePicker();
-                })
+                .setPositiveButton("Xác nhận", (dialog, which) -> openImagePicker())
                 .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
                 .setCancelable(false);
         builder.show();
@@ -167,4 +181,3 @@ public class EditProfileFragment extends Fragment {
         imagePickerLauncher.launch(intent);
     }
 }
-

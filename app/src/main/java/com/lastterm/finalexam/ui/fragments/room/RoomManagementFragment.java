@@ -30,6 +30,7 @@ import com.lastterm.finalexam.data.entities.Room;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RoomManagementFragment extends Fragment {
 
@@ -46,12 +47,9 @@ public class RoomManagementFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_room_management, container, false);
         setHasOptionsMenu(true);
 
-        // Initialize FirebaseFirestore
-        db = FirebaseFirestore.getInstance();
-
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
         ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeButtonEnabled(false);
 
         toolbar.inflateMenu(R.menu.menu_room_management);
@@ -91,7 +89,6 @@ public class RoomManagementFragment extends Fragment {
                             room.setId(document.getId());
                             Log.d("RoomManagement", "document.getId(): " + room.getId());
 
-                            // Thêm log để kiểm tra URL
                             List<String> imageUrls = room.getImgUrls();
                             if (imageUrls != null) {
                                 Log.d("RoomManagement", "Room: " + room.getTitle());

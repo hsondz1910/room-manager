@@ -15,6 +15,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.lastterm.finalexam.R;
 import com.lastterm.finalexam.data.entities.User;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText fullNameInput, usernameInput, passwordInput, emailInput, phoneInput;
@@ -30,9 +33,11 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        // Firebase instances
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        // Mapping UI elements
         fullNameInput = findViewById(R.id.full_name_input);
         usernameInput = findViewById(R.id.username_input);
         passwordInput = findViewById(R.id.password_input);
@@ -40,28 +45,29 @@ public class RegisterActivity extends AppCompatActivity {
         phoneInput = findViewById(R.id.phone_input);
         registerButton = findViewById(R.id.register_button);
 
-        // Map RadioGroup and RadioButton
         roleGroup = findViewById(R.id.role_group);
         roleOwner = findViewById(R.id.role_owner);
         roleTenant = findViewById(R.id.role_tenant);
 
-        // Default select Tenant
+        // Default role selection
         roleTenant.setChecked(true);
 
         registerButton.setOnClickListener(v -> {
-            // Get information from EditTexts
-            String fullName = fullNameInput.getText().toString();
-            String username = usernameInput.getText().toString();
-            String password = passwordInput.getText().toString();
-            String email = emailInput.getText().toString();
-            String phone = phoneInput.getText().toString();
+            // Retrieve input values
+            String fullName = fullNameInput.getText().toString().trim();
+            String username = usernameInput.getText().toString().trim();
+            String password = passwordInput.getText().toString().trim();
+            String email = emailInput.getText().toString().trim();
+            String phone = phoneInput.getText().toString().trim();
+            Boolean status = true;
 
-            // Get selected role from RadioGroup
-            String role;  // Default is "tenant"
-            if (roleGroup.getCheckedRadioButtonId() == R.id.role_owner) {
-                role = "owner";  // If "Owner" is selected
-            } else {
-                role = "tenant";
+            // Retrieve selected role
+            String role = (roleGroup.getCheckedRadioButtonId() == R.id.role_owner) ? "owner" : "tenant";
+
+            // Validate inputs
+            if (fullName.isEmpty() || username.isEmpty() || password.isEmpty() || email.isEmpty() || phone.isEmpty()) {
+                Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                return;
             }
 
             // Register user via Firebase Authentication
@@ -70,22 +76,35 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Registration successful, save user info to Firestore
                             String userId = mAuth.getCurrentUser().getUid();
-                            User user = new User(fullName, username, email, phone, role,"");
 
+                            // Create User object
+                            User user = new User(
+                                    userId,
+                                    fullName,
+                                    username,
+                                    email,
+                                    phone,
+                                    role,
+                                    "",  // Default avatar URL (empty)
+                                    status  // Active status by default
+                            );
+
+                            // Save user to Firestore
                             db.collection("users").document(userId)
-                                    .set(user)
+                                    .set(user.toMap())  // Convert to map before saving
                                     .addOnSuccessListener(aVoid -> {
                                         Toast.makeText(RegisterActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
-                                        // Redirect to login screen after successful registration
+                                        // Redirect to login page
                                         Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                                         startActivity(intent);
-                                        finish();  // Ensure no return to the registration page
+                                        finish();
                                     })
                                     .addOnFailureListener(e -> {
-                                        Toast.makeText(RegisterActivity.this, "Error saving user info", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(RegisterActivity.this, "Error saving user info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                     });
                         } else {
-                            Toast.makeText(RegisterActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
+                            // Registration failed
+                            Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
         });
