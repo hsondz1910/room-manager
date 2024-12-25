@@ -5,7 +5,7 @@ public class RoomFilter {
     private long maxPrice;
     private long minPrice;
     private long area;
-    private String location;
+    private Location location;
 
 
     public RoomFilter() {
@@ -13,10 +13,10 @@ public class RoomFilter {
         this.minPrice = 0;
         this.maxPrice = 0;
         this.area = 0;
-        this.location = "";
+        this.location = new Location("", "");
     }
 
-    public RoomFilter(String search, long minPrice, long maxPrice, long area, String location) {
+    public RoomFilter(String search, long minPrice, long maxPrice, long area, Location location) {
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
         this.area = area;
@@ -47,11 +47,11 @@ public class RoomFilter {
         this.area = area;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
@@ -63,3 +63,4 @@ public class RoomFilter {
         this.search = search;
     }
 }
+

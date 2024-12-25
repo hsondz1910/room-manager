@@ -135,11 +135,10 @@ public class RoomRepository {
                 }
                 if(!filter.getLocation().isEmpty()){
                     Log.d("TAG", "getLocation: " );
-                    if(!room.getAddress().toLowerCase().contains(filter.getLocation().toLowerCase())){
-                        continue;
+                    if(room.getAddress().toLowerCase().contains(filter.getLocation().getCity().toLowerCase()) && room.getAddress().toLowerCase().contains(filter.getLocation().getDistrict().toLowerCase())){
+                        room.setId(document.getId());
+                        rooms.add(room);
                     }
-                    room.setId(document.getId());
-                    rooms.add(room);
                 }
                 if(filter.getArea() == 0 && filter.getSearch().isEmpty() && filter.getLocation().isEmpty()){
                     room.setId(document.getId());

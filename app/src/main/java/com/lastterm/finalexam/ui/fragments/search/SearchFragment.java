@@ -11,8 +11,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
@@ -23,9 +27,16 @@ import androidx.appcompat.widget.SearchView;
 
 import com.google.android.material.chip.Chip;
 import com.lastterm.finalexam.R;
+import com.lastterm.finalexam.data.entities.Location;
 import com.lastterm.finalexam.data.repositories.RoomRepository;
 import com.lastterm.finalexam.ui.adapter.RoomAdapter;
 import com.lastterm.finalexam.data.entities.RoomFilter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SearchFragment extends Fragment {
     private RoomRepository roomRepository;
@@ -166,23 +177,88 @@ public class SearchFragment extends Fragment {
 
         chipLocation.setOnClickListener(v -> {
 
-            EditText Location = new EditText(requireContext());
-            Location.setHint("Khu vực");
-            Location.setText(String.valueOf(filter.getLocation()));
+            final Map<String, List<String>> locations = Location.ListCityanDistrict();
+
+            Spinner citySpinner = new Spinner(requireContext());
+            ArrayAdapter<String> cityAdapter = new ArrayAdapter<>(
+                    requireContext(),
+                    android.R.layout.simple_spinner_dropdown_item,
+                    new ArrayList<>(locations.keySet())
+            );
+            citySpinner.setAdapter(cityAdapter);
+
+            Spinner districtSpinner = new Spinner(requireContext());
+            ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(
+                    requireContext(),
+                    android.R.layout.simple_spinner_dropdown_item,
+                    new ArrayList<>()
+            );
+            districtSpinner.setAdapter(districtAdapter);
+            districtSpinner.setPadding(10, 20, 50, 20);
+
+            String selectedCity = filter.getLocation().getCity();
+            final String[] selectedDistrict = {filter.getLocation().getDistrict()};
+
+            if (selectedCity != "") {
+                int cityPosition = new ArrayList<>(locations.keySet()).indexOf(selectedCity);
+                citySpinner.setSelection(cityPosition);
+                List<String> districts = locations.getOrDefault(selectedCity, new ArrayList<>());
+                districtAdapter.addAll(districts);
+                districtAdapter.notifyDataSetChanged();
+
+                if (!selectedDistrict[0].isEmpty()) {
+                    int districtPosition = districts.indexOf(selectedDistrict[0]);
+                    districtSpinner.setSelection(districtPosition);
+                }
+            }
+
+            citySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    String newCity = (String) citySpinner.getSelectedItem();
+                    List<String> districts = locations.getOrDefault(newCity, new ArrayList<>());
+                    districtAdapter.clear();
+                    districtAdapter.addAll(districts);
+                    districtAdapter.notifyDataSetChanged();
+
+                    if (!newCity.equals(selectedCity)) {
+                        selectedDistrict[0] = "";
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {}
+            });
+            citySpinner.setPadding(10, 20, 50, 20);
+
+            TextView cityTitle = new TextView(requireContext());
+            cityTitle.setText("Thành phố");
+            cityTitle.setPadding(0, 20, 50, 20);
+
+            TextView districtTitle = new TextView(requireContext());
+            districtTitle.setText("Quận/Huyện");
+            districtTitle.setPadding(0, 20, 50, 20);
+
+            LinearLayout layout = new LinearLayout(requireContext());
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout.setPadding(50, 20, 50, 20);
+            layout.addView(cityTitle);
+            layout.addView(citySpinner);
+            layout.addView(districtTitle);
+            layout.addView(districtSpinner);
 
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Khu vực")
-                    .setView(Location)
+            builder.setTitle("Chọn khu vực")
+                    .setView(layout)
                     .setPositiveButton("Xác nhận", (dialog, which) -> {
-                        String location = Location.getText().toString();
-                        filter.setLocation(location);
+                        String city = citySpinner.getSelectedItem().toString();
+                        String district = districtSpinner.getSelectedItem().toString();
+                        filter.setLocation(new Location(city, district));
 
                         searchRooms();
-
                     })
-                    .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
-
-            builder.show();
+                    .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
+                    .show();
 
         });
 
